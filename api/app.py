@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask.ext.mysql import MySQL
 
 app = Flask(__name__)
@@ -18,33 +18,37 @@ cursor = conn.cursor()
 
 TABLE = 'sample'
 
+
 @app.route('/')
 def index():
     return "Hello, World!"
 
-@app.route('/trend', methods=['GET'])	# /trend?geo=GEO&topic=TOPIC
+
+@app.route('/trend', methods=['GET'])    # /trend?geo=GEO&topic=TOPIC
 def get_trend_chart():
-	geo = request.args.get('geo')
-	topic = request.args.get('topic')			# TODO: Map topics to cols
+    geo = request.args.get('geo')
+    topic = request.args.get('topic')			# TODO: Map topics to cols
 
-	query = """SELECT Year, %s 					# TODO: Should it return more information to be more easily downloaded into csv?
-				FROM %s 
-				WHERE AreaName = %s""" % (topic, TABLE, geo)
+    # TODO: Should it return more information to be more easily downloaded into csv?
+    query = """SELECT Year, %s
+                FROM %s
+                WHERE AreaName = %s""" % (topic, TABLE, geo)
 
-	results = cursor.execute(query)
+    results = cursor.execute(query)
     return results
+
 
 @app.route('/pie', methods=['GET'])	# /pie?geo=GEO&topic=TOPIC&year=YEAR
 def get_pie_chart():
-	geo = request.args.get('geo')
-	topic = request.args.get('topic')			# TODO: Map topics to cols
-	year = request.args.get('year')
+    geo = request.args.get('geo')
+    topic = request.args.get('topic')			# TODO: Map topics to cols
+    year = request.args.get('year')
 
-	query = """SELECT %s, %s 
-				FROM %s 
-				WHERE AreaName = %s""" % (year, topic, TABLE, geo)
+    query = """SELECT %s, %s
+                FROM %s
+                WHERE AreaName = %s""" % (year, topic, TABLE, geo)
 
-	results = cursor.execute(query)
+    results = cursor.execute(query)
     return results
 
 # @app.route('stackedbar/states/<state>', methods=['GET'])
