@@ -3,7 +3,11 @@
 <body>
     <title>Pie Chart</title>
     <div style="width: 80%">
-        <canvas id="myChart" width="400" height="400"></canvas>
+        <canvas id="pieChart" width="400" height="400"></canvas>
     </div>
-    <button onclick="download_csv()">Download CSV</button>
+    <div style="width: 80%">
+        <canvas id="lineChart" width="400" height="400"></canvas>
+    </div>
+    <button onclick="download_csv_pie()">Download CSV (Pie)</button>
+    <button onclick="changedata_line()">Change Data Set (Line)</button>
 </body>
