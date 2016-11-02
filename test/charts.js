@@ -105,3 +105,47 @@ window.changedata_line = function () {
         }
     });
 }
+
+var bar_ctx = document.getElementById("barChart");
+
+var barChartData = {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: [{
+        type: 'bar',
+        label: 'Dataset 1',
+        backgroundColor: "rgba(220,220,220,0.7)",
+        data: [1, 2, 3, 4, 5, 6, 7]
+    }, {
+        type: 'bar',
+        label: 'Dataset 2',
+        backgroundColor: "rgba(151,187,205,0.7)",
+        data: [2, 3, 4, 5, 6, 7, 8]
+    }, {
+        type: 'bar',
+        label: 'Dataset 3',
+        backgroundColor: "rgba(151,187,205,0.7)",
+        data: [4, 3, 2, 1, 2, 3]
+    }, {
+        type: 'bar',
+        label: 'Dataset 4',
+        backgroundColor: "rgba(191,107,205,0.7)",
+        data: [5, 1, 2, 3, 5, 7, 1],
+        borderColor: 'white',
+        borderWidth: 0
+    }]
+};
+
+var barChart = new Chart(bar_ctx, {
+    type: 'bar',
+    data: barChartData,
+    options: {
+        scales: {
+            xAxes: [{
+                stacked: true,
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+});
