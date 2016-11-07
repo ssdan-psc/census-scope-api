@@ -1,4 +1,5 @@
-
+window.onload = function()
+{
 var pie_ctx = document.getElementById("pieChart");
 var data = {
   labels: [
@@ -149,3 +150,4 @@ var barChart = new Chart(bar_ctx, {
         }
     }
 });
+}
