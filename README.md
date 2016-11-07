@@ -1,4 +1,4 @@
-To run API `python appy.py`
+To run API `python app.py`
 
 To see test site `python -m SimpleHTTPServer 8000` from test
 
