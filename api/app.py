@@ -31,20 +31,11 @@ def get_trend_chart():
     topic = request.args.get('topic')			# TODO: Map topics to cols
 
     # TODO: Should it return more information to be more easily downloaded into csv?
-<<<<<<< HEAD
     query = "SELECT Year," + topic + " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
     cursor.execute(query)
     results = cursor.fetchall()
     print(results)
     return jsonify(results)
-=======
-    query = """SELECT Year, %s
-                FROM %s
-                WHERE AreaName = '%s'""" % (topic, TABLE, geo)
-    cursor.execute(query)
-    results = cursor.fetchall()
-    return results
->>>>>>> 6bfcb3c5fd2c7614843897037510da917fe8a0ed
 
 
 @app.route('/pie', methods=['GET'])	# /pie?geo=GEO&topic=TOPIC&year=YEAR
