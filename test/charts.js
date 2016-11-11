@@ -1,5 +1,5 @@
+var ctx = $("#myChart");
 
-var ctx = document.getElementById("myChart");
 var data = {
   labels: [
     "Red",
@@ -20,6 +20,7 @@ var data = {
     ]
   }]
 };
+
 var myChart = new Chart(ctx, {
   type: 'pie',
   data: data,

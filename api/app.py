@@ -11,6 +11,7 @@ app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = ''
 app.config['MYSQL_DATABASE_DB'] = 'census_scope'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_PORT'] = 3307
 mysql.init_app(app)
 
 conn = mysql.connect()
@@ -30,12 +31,11 @@ def get_trend_chart():
     topic = request.args.get('topic')			# TODO: Map topics to cols
 
     # TODO: Should it return more information to be more easily downloaded into csv?
-    query = """SELECT Year, %s
-                FROM %s
-                WHERE AreaName = %s""" % (topic, TABLE, geo)
-
-    results = cursor.execute(query)
-    return results
+    query = "SELECT Year," + topic + " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
+    cursor.execute(query)
+    results = cursor.fetchall()
+    print(results)
+    return jsonify(results)
 
 
 @app.route('/pie', methods=['GET'])	# /pie?geo=GEO&topic=TOPIC&year=YEAR
@@ -48,7 +48,8 @@ def get_pie_chart():
                 FROM %s
                 WHERE AreaName = %s""" % (year, topic, TABLE, geo)
 
-    results = cursor.execute(query)
+    cursor.execute(query)
+    results = cursor.fetchall()
     return results
 
 # @app.route('stackedbar/states/<state>', methods=['GET'])
