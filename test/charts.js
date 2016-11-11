@@ -1,5 +1,6 @@
-var ctx = $("#myChart");
-
+window.onload = function()
+{
+var pie_ctx = document.getElementById("pieChart");
 var data = {
   labels: [
     "Red",
@@ -20,8 +21,7 @@ var data = {
     ]
   }]
 };
-
-var myChart = new Chart(ctx, {
+var pieChart = new Chart(pie_ctx, {
   type: 'pie',
   data: data,
   options: {
@@ -35,16 +35,16 @@ var myChart = new Chart(ctx, {
   }
 });
 
-window.download_csv = function() {
-		var img = myChart.toBase64Image();
+window.download_csv_pie = function() {
+  var img = pieChart.toBase64Image();
     var csv = 'Color,Value\n';
     console.log(data["datasets"][0]["data"])
     console.log(data["labels"])
     for (i = 0; i < data["datasets"][0]["data"].length; i++)
     {
-    	csv += data["labels"][i];
-    	csv += ",";
-    	csv += data["datasets"][0]["data"][i];
+      csv += data["labels"][i];
+      csv += ",";
+      csv += data["datasets"][0]["data"][i];
       csv += "\n";
       }
 
@@ -57,4 +57,97 @@ window.download_csv = function() {
     hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
     hiddenElement.download = 'data.csv';
     hiddenElement.click();
+}
+
+
+var line_ctx = document.getElementById("lineChart");
+var data = [{
+  labels: [0, 1, 2, 3, 4, 5,],
+  datasets: [{
+    data: [30, 5, 10, 3, 9, 50],
+  }, {
+    data: [30, 50, 100, 30, 90, 5],
+  }]
+}, {
+  labels: [0, 1, 2, 3, 4, 5],
+  datasets: [{
+    data: [320, 52, 102, 32, 92, 502],
+  }, {
+    data: [302, 520, 120, 230, 290, 25],
+  }]
+}];
+
+var line_useddat = { "datasets": [{ "data": [30, 5, 10, 3, 9, 50] }, { "data": [30, 50, 100, 30, 90, 5] }], "labels": [0, 1, 2, 3, 4, 5] }
+
+var lineChart = new Chart(line_ctx, {
+    type: 'line',
+    data: line_useddat,
+    options: {
+        title: {
+            display: true,
+            text: 'Line Chart',
+        },
+    }
+});
+
+window.changedata_line = function () {
+    if (line_useddat == data[0])
+        line_useddat = data[1];
+    else
+        line_useddat = data[0];
+    lineChart = new Chart(line_ctx, {
+        type: 'line',
+        data: line_useddat,
+        options: {
+            title: {
+                display: true,
+                text: 'Line Chart',
+            },
+        }
+    });
+}
+
+var bar_ctx = document.getElementById("barChart");
+
+var barChartData = {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: [{
+        type: 'bar',
+        label: 'Dataset 1',
+        backgroundColor: "rgba(220,220,220,0.7)",
+        data: [1, 2, 3, 4, 5, 6, 7]
+    }, {
+        type: 'bar',
+        label: 'Dataset 2',
+        backgroundColor: "rgba(151,187,205,0.7)",
+        data: [2, 3, 4, 5, 6, 7, 8]
+    }, {
+        type: 'bar',
+        label: 'Dataset 3',
+        backgroundColor: "rgba(151,187,205,0.7)",
+        data: [4, 3, 2, 1, 2, 3]
+    }, {
+        type: 'bar',
+        label: 'Dataset 4',
+        backgroundColor: "rgba(191,107,205,0.7)",
+        data: [5, 1, 2, 3, 5, 7, 1],
+        borderColor: 'white',
+        borderWidth: 0
+    }]
+};
+
+var barChart = new Chart(bar_ctx, {
+    type: 'bar',
+    data: barChartData,
+    options: {
+        scales: {
+            xAxes: [{
+                stacked: true,
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+});
 }
