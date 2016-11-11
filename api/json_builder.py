@@ -1,5 +1,7 @@
 ﻿import json
 
+import json_builder
+
 class set_stackedbar:
     def __init__(self, label, data, rgba):
         self.label = label
