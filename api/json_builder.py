@@ -1,6 +1,21 @@
 ﻿import json
 
-import json_builder
+class pie_slices:
+    """
+    Object for building pie charts. Every dataset in a pie chart should
+    be a pie_slices object. pie_slices contain:
+        labels: a list of strings for the text of each slice
+        colors: a list of (r, g, b, a) tuples for each slice
+        dataset: a list of values for each slice
+    Each slice has one label and one color associated with it, as well
+    as its data. Corresponding values are matched by index. This means
+    that labels[0], colors[0], and dataset[0] all correspond to the
+    same slice of the pie chart.
+    """
+    def __init__(self, labels, colors, dataset):
+        self.labels = labels
+        self.colors = colors
+        self.dataset = dataset
 
 class set_stackedbar:
     def __init__(self, label, data, rgba):
@@ -13,7 +28,36 @@ def build_json(labels, datasets, type):
         return line_chart(labels, datasets)
     if (type == "stacked bar"):
         return stackedbar_chart(labels, datasets)
+    if (type == "pie"):
+        return pie_chart(labels, datasets)
     return
+
+def pie_chart(datasets):
+    """
+    Returns a string that represents a JSON object for a pie chart.
+    datasets: a list of pie_slices objects that represent each set
+                of data displayed in this pie chart
+    """
+
+    j = "{"
+    j += "labels: ["
+    for pslices in datasets:
+        j += str(pslices.labels)
+        j += ", "
+    j += "], datasets: ["
+    for pslices in datasets:
+        j += "{data: "
+        j += str(pslices.dataset)
+        j += ", "
+        j += "backgroundColor: ["
+        for color in pslices.colors:
+            j += "\"rgba"
+            j += str(color)
+            j += "\","
+        j += "]}"
+    j += "]}"
+
+    return j
 
 def table_plain(labels, datasets):
     """
@@ -67,14 +111,23 @@ def stackedbar_chart(labels, stackedbarsets):
 
 
 def main():
-    labels = [0, 1, 2, 3, 4, 5]
-    datasets = [[30, 5, 10, 3, 9, 50], [30, 50, 100, 30, 90, 5]]
+    labels = ["red", "green", "blue"]
+    dataset = [170, 20, 25]
+    colors = []
+    colors.append((100, 200, 100, 0.5))
+    colors.append((200, 100, 100, 0.5))
+    colors.append((100, 100, 200, 0.5))
+    pslices = [pie_slices(labels, colors, dataset)]
 
-    j = build_json(labels, datasets, "line")
+    labels = ["red", "green", "blue"]
+    dataset = [140, 220, 25]
+    colors = []
+    colors.append((130, 20, 105, 0.5))
+    colors.append((200, 120, 230, 0.5))
+    colors.append((100, 200, 200, 0.7))
+    pslices.append(pie_slices(labels, colors, dataset))
 
-    print(table_plain(labels, datasets))
-
-    #test stacked bar chart json
+    j = pie_chart(pslices)
 
     file = open('json.txt', 'w')
     file.write(str(j))
