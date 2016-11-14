@@ -19,7 +19,8 @@
     </div>
     <form id="pie_form">
         <select name="geo">
-            <option selected disabled>State</option>
+        	<option disabled>Geographic Area</option>
+            <option selected value="United States">United States</option>
             <option value="connecticut">Connecticut</option>
             <option value="vermont">Vermont</option>
             <option value="new hampshire">New Hampshire</option>
@@ -27,8 +28,8 @@
         </select>
 
         <select name="year">
-            <option selected disabled>Year</option>
-            <option value="2010">2010</option>
+            <option disabled>Year</option>
+            <option selected value="2010">2010</option>
             <option value="2015">2015</option>
         </select>
 
@@ -37,14 +38,14 @@
     <p>
         <button onclick="">Download Graph</button>
         <button onclick="download_csv_pie()">Download CSV (Pie)</button>
-        <button onclick="changedata_line()">Change Data Set (Line)</button>
 
         <div style="width: 40%">
+        	<h1 style="text-align:center">Trend Chart</h1>
             <canvas id="lineChart" width="400" height="400"></canvas>
         </div>
-        <form id="line_form">
+        <form id="trend_form">
             <select name="geo">
-                <option selected disabled>State</option>
+                <option selected>United States</option>
                 <option value="connecticut">Connecticut</option>
                 <option value="vermont">Vermont</option>
                 <option value="new hampshire">New Hampshire</option>
@@ -53,11 +54,11 @@
             <button id="line_button" type="submit">Generate Chart</button>
         </form>
         <p>
-            <button onclick="">Download Graph</button>
+        	<button onclick="">Download Graph</button>
             <button onclick="download_csv_pie()">Download CSV (Pie)</button>
-            <button onclick="changedata_line()">Change Data Set (Line)</button>
 
             <div style="width: 40%">
+            	<h1 style="text-align:center">Stacked Bar Chart</h1>
                 <canvas id="barChart" width="400" height="400"></canvas>
             </div>
             <form id="bar_form">
@@ -73,6 +74,5 @@
             <p>
                 <button onclick="">Download Graph</button>
                 <button onclick="download_csv_pie()">Download CSV (Pie)</button>
-                <button onclick="changedata_line()">Change Data Set (Line)</button>
 
 </body>

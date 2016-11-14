@@ -1,8 +1,59 @@
 $(document).ready(function() {
+  var topic = window.location.search.split("=")[1] // TODO: Fix this 
 
+  var pieChart;
+  var lineChart;
+  var barChart;
+
+  var pie_ctx = document.getElementById("pieChart");
+  var line_ctx = document.getElementById("lineChart");
+  var bar_ctx = document.getElementById("barChart");
+
+    // Default Pie Chart
+    $.ajax({
+       async: false,
+       type: 'GET',
+       url: 'http://localhost:5000/pie?topic=' + topic + '&geo=united%20states&year=2010',
+       success: function(data) {
+            var datasource = JSON.parse(data)
+            console.log(datasource)
+
+            pieChart = new Chart(pie_ctx, 
+              {type: 'pie',
+              data: datasource,
+              options: {
+                animation: {
+                    duration: 1000,
+                    animateRotate: false,
+                    animateScale: true,
+                  },
+                  circumference: 2 * Math.PI,
+                  cutoutPercentage: 0,
+                }
+              });
+          }
+    });
+
+  // Default Trend Chart
+  $.ajax({
+    async: false,
+    type: 'GET',
+    url: 'http://localhost:5000/trend?topic=' + topic + '&geo=united%20states',
+    success: function(data) {
+      var datasource = JSON.parse(data)
+      console.log(datasource)
+      lineChart = new Chart(line_ctx, {
+        type: 'line',
+        data: datasource
+      });
+    }
+  });
+
+  // Default Stacked Bar Chart
+
+  // Update Pie Chart
   $( "#pie_form" ).on( "submit", function( event ) {
     event.preventDefault();
-     var topic = window.location.search.split("=")[1]
      var options = $( this ).serialize();
      var url = 'http://localhost:5000/pie?topic=' + topic + '&' + options
      console.log(url)
@@ -14,15 +65,10 @@ $(document).ready(function() {
        type: 'GET',
        url: url,
        success: function(data) {
-            // console.log(data)
-            // var datasource = {labels: ['LTHS', 'HSGrad', 'SomeColl', 'CollGrad', 'GradProf'], datasets: [{data: [277008,687618,604458,491990,373309], backgroundColor: ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"],hoverBackgroundColor: ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"]}]};
-            //var data = '{"labels": ["LTHS", "HSGrad", "SomeColl", "CollGrad", "GradProf"], "datasets": [{"data": [277008,687618,604458,491990,373309], "backgroundColor": ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"], "hoverBackgroundColor": ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"]}]}'
             var datasource = JSON.parse(data)
             console.log(datasource)
-
-            var pie_ctx = document.getElementById("pieChart");
-
-            var pieChart = new Chart(pie_ctx, {
+            pieChart.destroy();
+            pieChart = new Chart(pie_ctx, {
                                                 type: 'pie',
                                                 data: datasource,
                                                 options: {
@@ -39,40 +85,41 @@ $(document).ready(function() {
     });
   });
 
-    // var pie_ctx = document.getElementById("pieChart");
-    // var data = {
-    //   labels: [
-    //     "Red",
-    //     "Blue",
-    //     "Yellow"
-    //   ],
-    //   datasets: [{
-    //     data: [300, 50, 100],
-    //     backgroundColor: [
-    //       "#FF6384",
-    //       "#36A2EB",
-    //       "#FFCE56"
-    //     ],
-    //     hoverBackgroundColor: [
-    //       "#FF6384",
-    //       "#36A2EB",
-    //       "#FFCE56"
-    //     ]
-    //   }]
-    // };
-    // var pieChart = new Chart(pie_ctx, {
-    //   type: 'pie',
-    //   data: data,
-    //   options: {
-    //     animation: {
-    //       duration: 1000,
-    //       animateRotate: false,
-    //       animateScale: true,
-    //     },
-    //     circumference: 2 * Math.PI,
-    //     cutoutPercentage: 0,
-    //   }
-    // });
+// Update Trend Chart 
+$( "#trend_form" ).on( "submit", function( event ) {
+    event.preventDefault();
+     var topic = window.location.search.split("=")[1]
+     var options = $( this ).serialize();
+     var url = 'http://localhost:5000/trend?topic=' + topic + '&' + options
+     console.log(url)
+     
+     var datasource = {labels: [], datasets: []};
+
+     $.ajax({
+       async: false,
+       type: 'GET',
+       url: url,
+       success: function(data) {
+        var datasource = {labels: ["2010", "2015"], datasets: [{ data:[3577073, 3590886]}]};
+        //var datasource = JSON.parse(data)
+        console.log(datasource)
+
+        lineChart.destroy()
+        lineChart = new Chart(line_ctx, 
+          {type: 'line',
+          data: datasource,
+          options: {
+            title: {
+              display: true,
+              text: 'Line Chart',
+            },
+          }
+        });
+       }
+    });
+  });
+
+
 
     window.download_csv_pie = function() {
       var img = pieChart.toBase64Image();
@@ -99,54 +146,35 @@ $(document).ready(function() {
     }
 
 
-    var line_ctx = document.getElementById("lineChart");
-    var data = [{
-      labels: [0, 1, 2, 3, 4, 5,],
-      datasets: [{
-        data: [30, 5, 10, 3, 9, 50],
-      }, {
-        data: [30, 50, 100, 30, 90, 5],
-      }]
-    }, {
-      labels: [0, 1, 2, 3, 4, 5],
-      datasets: [{
-        data: [320, 52, 102, 32, 92, 502],
-      }, {
-        data: [302, 520, 120, 230, 290, 25],
-      }]
-    }];
+    // var line_ctx = document.getElementById("lineChart");
+    // var data = [{
+    //   labels: [0, 1, 2, 3, 4, 5,],
+    //   datasets: [{
+    //     data: [30, 5, 10, 3, 9, 50],
+    //   }, {
+    //     data: [30, 50, 100, 30, 90, 5],
+    //   }]
+    // }, {
+    //   labels: [0, 1, 2, 3, 4, 5],
+    //   datasets: [{
+    //     data: [320, 52, 102, 32, 92, 502],
+    //   }, {
+    //     data: [302, 520, 120, 230, 290, 25],
+    //   }]
+    // }];
 
-    var line_useddat = { "datasets": [{ "data": [30, 5, 10, 3, 9, 50] }, { "data": [30, 50, 100, 30, 90, 5] }], "labels": [0, 1, 2, 3, 4, 5] }
+    // var line_useddat = { "datasets": [{ "data": [30, 5, 10, 3, 9, 50] }, { "data": [30, 50, 100, 30, 90, 5] }], "labels": [0, 1, 2, 3, 4, 5] }
 
-    var lineChart = new Chart(line_ctx, {
-        type: 'line',
-        data: line_useddat,
-        options: {
-            title: {
-                display: true,
-                text: 'Line Chart',
-            },
-        }
-    });
-
-    window.changedata_line = function () {
-        if (line_useddat == data[0])
-            line_useddat = data[1];
-        else
-            line_useddat = data[0];
-        lineChart = new Chart(line_ctx, {
-            type: 'line',
-            data: line_useddat,
-            options: {
-                title: {
-                    display: true,
-                    text: 'Line Chart',
-                },
-            }
-        });
-    }
-
-    var bar_ctx = document.getElementById("barChart");
+    // var lineChart = new Chart(line_ctx, {
+    //     type: 'line',
+    //     data: line_useddat,
+    //     options: {
+    //         title: {
+    //             display: true,
+    //             text: 'Line Chart',
+    //         },
+    //     }
+    // });
 
     var barChartData = {
         labels: ["January", "February", "March", "April", "May", "June", "July"],
@@ -175,7 +203,7 @@ $(document).ready(function() {
         }]
     };
 
-    var barChart = new Chart(bar_ctx, {
+    barChart = new Chart(bar_ctx, {
         type: 'bar',
         data: barChartData,
         options: {
