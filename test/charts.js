@@ -6,50 +6,73 @@ $(document).ready(function() {
      var options = $( this ).serialize();
      var url = 'http://localhost:5000/pie?topic=' + topic + '&' + options
      console.log(url)
+     
+     var datasource = {labels: [], datasets: []};
+
      $.ajax({
        async: false,
        type: 'GET',
        url: url,
        success: function(data) {
-            console.log(data)
+            // console.log(data)
+            // var datasource = {labels: ['LTHS', 'HSGrad', 'SomeColl', 'CollGrad', 'GradProf'], datasets: [{data: [277008,687618,604458,491990,373309], backgroundColor: ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"],hoverBackgroundColor: ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"]}]};
+            //var data = '{"labels": ["LTHS", "HSGrad", "SomeColl", "CollGrad", "GradProf"], "datasets": [{"data": [277008,687618,604458,491990,373309], "backgroundColor": ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"], "hoverBackgroundColor": ["#FF6384","#36A2EB","#FFCE56","#cb62ff","#72ff62","#ffa362"]}]}'
+            var datasource = JSON.parse(data)
+            console.log(datasource)
+
+            var pie_ctx = document.getElementById("pieChart");
+
+            var pieChart = new Chart(pie_ctx, {
+                                                type: 'pie',
+                                                data: datasource,
+                                                options: {
+                                                  animation: {
+                                                    duration: 1000,
+                                                    animateRotate: false,
+                                                    animateScale: true,
+                                                  },
+                                                  circumference: 2 * Math.PI,
+                                                  cutoutPercentage: 0,
+                                                }
+                                              });
        }
     });
   });
 
-    var pie_ctx = document.getElementById("pieChart");
-    var data = {
-      labels: [
-        "Red",
-        "Blue",
-        "Yellow"
-      ],
-      datasets: [{
-        data: [300, 50, 100],
-        backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56"
-        ],
-        hoverBackgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56"
-        ]
-      }]
-    };
-    var pieChart = new Chart(pie_ctx, {
-      type: 'pie',
-      data: data,
-      options: {
-        animation: {
-          duration: 1000,
-          animateRotate: false,
-          animateScale: true,
-        },
-        circumference: 2 * Math.PI,
-        cutoutPercentage: 0,
-      }
-    });
+    // var pie_ctx = document.getElementById("pieChart");
+    // var data = {
+    //   labels: [
+    //     "Red",
+    //     "Blue",
+    //     "Yellow"
+    //   ],
+    //   datasets: [{
+    //     data: [300, 50, 100],
+    //     backgroundColor: [
+    //       "#FF6384",
+    //       "#36A2EB",
+    //       "#FFCE56"
+    //     ],
+    //     hoverBackgroundColor: [
+    //       "#FF6384",
+    //       "#36A2EB",
+    //       "#FFCE56"
+    //     ]
+    //   }]
+    // };
+    // var pieChart = new Chart(pie_ctx, {
+    //   type: 'pie',
+    //   data: data,
+    //   options: {
+    //     animation: {
+    //       duration: 1000,
+    //       animateRotate: false,
+    //       animateScale: true,
+    //     },
+    //     circumference: 2 * Math.PI,
+    //     cutoutPercentage: 0,
+    //   }
+    // });
 
     window.download_csv_pie = function() {
       var img = pieChart.toBase64Image();

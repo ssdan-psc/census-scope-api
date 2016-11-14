@@ -1,10 +1,10 @@
 ﻿
-class dataset:
+class Dataset(object):
     def __init__(self, type_name):
         self.type_name = type_name
         return
 
-class pie_slices(dataset):
+class Pie_Slices(Dataset):
     """
     Object for building pie chart JSONs. Every dataset in a pie chart
     should be a pie_slices object. pie_slices contain:
@@ -16,11 +16,11 @@ class pie_slices(dataset):
     same slice of the pie chart.
     """
     def __init__(self, colors, data):
-        super().__init__("pie")
+        super(Pie_Slices, self).__init__("pie")
         self.colors = colors
         self.data = data
 
-class stacked_bars(dataset):
+class Stacked_Bars(Dataset):
     """
     Object for building stacked bar chart JSONs. Every dataset in a
     stacked bar chart should be a stacked_bars object. stacked_bars
@@ -32,12 +32,12 @@ class stacked_bars(dataset):
     label. The values should be of a numerical type.
     """
     def __init__(self, label, color, data):
-        super().__init__("bars")
+        super(Stacked_Bars, self).__init__("bars")
         self.label = label
         self.color = color
         self.data = data
 
-class line_data(dataset):
+class Line_Data(Dataset):
     """
     Object for building line chart JSONs. Every dataset in a line chart
     should be a line_data object. line_data contains:
@@ -45,7 +45,7 @@ class line_data(dataset):
         data: list of numerical values for each point on the line
     """
     def __init__(self, data, label):
-        super().__init__("line")
+        super(Line_Data, self).__init__("line")
         self.label = label
         self.data = data
 
@@ -62,25 +62,58 @@ def chart_pie(labels, dataset):
     """
 
     j = "{"
-    j += "labels: "
-    j += str(labels)
-    j += ", datasets: ["
-    j += "{data: "
-    j += str(dataset.data)
+    j += '"labels": ['
+    for label in labels:
+        j+= '"' + label + '"'
+        if label != labels[-1]:
+            j += ','
+    j += '], '
+
+    j += '"datasets": ['
+    j += '{"data": ['
+
+    for data in dataset.data:
+        j+= str(data)
+
+        if data != dataset.data[-1]:
+            j += ","
+    j += "]"
+
     j += ", "
-    j += "backgroundColor: ["
+    j += '"backgroundColor": ['
+
     for color in dataset.colors:
-        j += "\"rgba"
+        # j += "\"rgba"
+        j += '"'
         j += str(color)
-        j += "\","
+        
+        if color != dataset.colors[-1]:
+            j += "\","
+        else:
+            j += '"'
+
     j += "],"
-    j += "hoverBackgroundColor: ["
+    j += '"hoverBackgroundColor": ['
+
     for color in dataset.colors:
-        j += "\"rgba"
+     # j += "\"rgba"
+        j += '"'
         j += str(color)
-        j += "\","
+        
+        if color != dataset.colors[-1]:
+            j += "\","
+        else:
+            j += '"'
+
     j += "]}"
     j += "]}"
+
+    # for color in dataset.colors:
+    #     j += "\"rgba"
+    #     j += str(color)
+    #     j += "\","
+    # j += "]}"
+    # j += "]}"
 
     return j
 
