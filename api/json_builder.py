@@ -64,7 +64,7 @@ def chart_pie(labels, dataset):
     j = "{"
     j += '"labels": ['
     for label in labels:
-        j+= '"' + label + '"'
+        j+= '"' + label.decode('utf-8') + '"'
         if label != labels[-1]:
             j += ','
     j += '], '

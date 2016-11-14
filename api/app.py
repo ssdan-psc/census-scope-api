@@ -48,7 +48,7 @@ def get_trend_chart():
     if cols:
         query = "SELECT Year"
         for col in cols: 
-            query += "," + str(col)
+            query += "," + col.decode('utf-8')
         query += " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
         print(query)
         cursor.execute(query)
@@ -71,12 +71,13 @@ def get_pie_chart():
     if cols:
         query = "SELECT "
         for col in cols:
-            query += str(col) 
+            query += col.decode('utf-8')
             if col != cols[-1]:
                 query += ","
         
         query += " FROM " + TABLE + " WHERE AreaName='" + geo + "' AND Year=" + year
-        
+        print(query)
+
         try:
             cursor.execute(query)
         except:
