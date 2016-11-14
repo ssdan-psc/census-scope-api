@@ -1,138 +1,201 @@
-﻿import json
+﻿
+class dataset:
+    def __init__(self, type_name):
+        self.type_name = type_name
+        return
 
-class pie_slices:
+class pie_slices(dataset):
     """
-    Object for building pie charts. Every dataset in a pie chart should
-    be a pie_slices object. pie_slices contain:
-        labels: a list of strings for the text of each slice
+    Object for building pie chart JSONs. Every dataset in a pie chart
+    should be a pie_slices object. pie_slices contain:
         colors: a list of (r, g, b, a) tuples for each slice
         dataset: a list of values for each slice
-    Each slice has one label and one color associated with it, as well
+    Each slice has one color associated with it, as well
     as its data. Corresponding values are matched by index. This means
-    that labels[0], colors[0], and dataset[0] all correspond to the
+    that colors[0], and dataset[0] correspond to the
     same slice of the pie chart.
     """
-    def __init__(self, labels, colors, dataset):
-        self.labels = labels
+    def __init__(self, colors, data):
+        super().__init__("pie")
         self.colors = colors
-        self.dataset = dataset
+        self.data = data
 
-class set_stackedbar:
-    def __init__(self, label, data, rgba):
+class stacked_bars(dataset):
+    """
+    Object for building stacked bar chart JSONs. Every dataset in a
+    stacked bar chart should be a stacked_bars object. stacked_bars
+    contain:
+        label: a string for the name of the data set
+        color: (r, g, b, a) tuple representing the set's color
+        data: a list of nuerical values for each bar
+    All bars in the dataset are the same color and have the same
+    label. The values should be of a numerical type.
+    """
+    def __init__(self, label, color, data):
+        super().__init__("bars")
+        self.label = label
+        self.color = color
+        self.data = data
+
+class line_data(dataset):
+    """
+    Object for building line chart JSONs. Every dataset in a line chart
+    should be a line_data object. line_data contains:
+        label: a string for the name of the data set
+        data: list of numerical values for each point on the line
+    """
+    def __init__(self, data, label):
+        super().__init__("line")
         self.label = label
         self.data = data
-        self.rgba = rgba
 
-def build_json(labels, datasets, type):
-    if (type == "line"):
-        return line_chart(labels, datasets)
-    if (type == "stacked bar"):
-        return stackedbar_chart(labels, datasets)
-    if (type == "pie"):
-        return pie_chart(labels, datasets)
-    return
 
-def pie_chart(datasets):
+def chart_pie(labels, dataset):
     """
-    Returns a string that represents a JSON object for a pie chart.
-    datasets: a list of pie_slices objects that represent each set
+    Returns a string that represents a JSON object for a pie chart
+    constructed from the dataset provided.
+    labels: a list of strings for the names of each slice
+    dataset: a pie_slices object that represents the set
                 of data displayed in this pie chart
+    Labels aand data are matched up by index; for example dataset[0]
+    and labels[0] will be attributes of the same slice.
     """
 
     j = "{"
-    j += "labels: ["
-    for pslices in datasets:
-        j += str(pslices.labels)
-        j += ", "
-    j += "], datasets: ["
-    for pslices in datasets:
-        j += "{data: "
-        j += str(pslices.dataset)
-        j += ", "
-        j += "backgroundColor: ["
-        for color in pslices.colors:
-            j += "\"rgba"
-            j += str(color)
-            j += "\","
-        j += "]}"
+    j += "labels: "
+    j += str(labels)
+    j += ", datasets: ["
+    j += "{data: "
+    j += str(dataset.data)
+    j += ", "
+    j += "backgroundColor: ["
+    for color in dataset.colors:
+        j += "\"rgba"
+        j += str(color)
+        j += "\","
+    j += "],"
+    j += "hoverBackgroundColor: ["
+    for color in dataset.colors:
+        j += "\"rgba"
+        j += str(color)
+        j += "\","
+    j += "]}"
     j += "]}"
 
     return j
 
-def table_plain(labels, datasets):
+def chart_bar(labels, datasets):
     """
-    takes labels as list of labels for headers of table
-    takes datasets as list of lists of values
-        each list of values should be as long as list of headers
+    Returns a string that represents the JSON object for a stacked
+    bar chart constructed from the datasets provided.
+    labels: a list of strings for the x-axis labels on the chart
+    datasets: a list of stacked_bars objects, one for each dataset
     """
-    j = [labels, datasets]
+
+    j = "{"
+    j += "labels: "
+    j += str(labels)
+    j += ", datasets: ["
+    for bars in datasets:
+        j += "{"
+        j += "type: 'bar',"
+        j += "label: \""
+        j += bars.label
+        j += "\", backgroundColor: \"rgba"
+        j += str(bars.color)
+        j += "\", data: "
+        j += str(bars.data)
+        j += "},"
+    j += "]}"
+
+    return j
+
+
+def chart_line(labels, datasets):
+    """
+    Returns a string representing the JSON object for a line chart
+    constructed from the datasets provided.
+    labels: a list of strings for the x-axis labels on the chart
+    datasets: a list of line_data objects, on for each dataset
+    """
+
+    j = "{"
+    j += "labels: "
+    j += str(labels)
+    j += ", datasets: ["
+    for lines in datasets:
+        j += "{"
+        j += "label: \""
+        j += lines.label
+        j += "\", data: "
+        j += str(lines.data)
+        j += "},"
+    j += "]}"
+
+    return j
+
+
+def build_json(labels, datasets):
+    """
+    Returns a string representing the JSON object for the chart
+    matching the datasets passed in.
+    labels: a list of strings representing the labels in the chart
+    datasets: a dataset object or list of dataset objects holding
+                the data for this chart
+    To make a pie chart, pass in a list containing a single
+    pie_slices object. For other charts, pass in a list of 
+    dataset objects. To make a chart with only one set of data,
+    pass a list with only one dataset object. All the dataset
+    objects in the list must be of the same subtype of
+    dataset.
+    """
+    if (datasets[0].type_name == "pie"):
+        return chart_pie(labels, datasets[0])
+    elif (datasets[0].type_name == "bars"):
+        return chart_bar(labels, datasets)
+    elif (datasets[0].type_name == "line"):
+        return chart_line(labels, datasets)
+
+    return
+
+
+def test():
+    labels = ['r', 'g', 'b']
+    data = [10, 11, 7]
+    c = []
+    c.append((100, 20, 40));
+    c.append((10, 200, 40));
+    c.append((10, 20, 255));
+    j = chart_pie(labels, pie_slices(c, data))
+    print(j)
+
     
-    return json.dumps(j)
+    labels = ['abc', 'def', 'ghi', 'jkl']
+    sets = []
 
+    data = [10, 30, 40, 50]
+    bars = stacked_bars("dogs", (199, 27, 44, 0.9), data)
+    sets.append(bars)
 
-def line_chart(labels, datasets):
-    j = {}
-    l = labels
+    data = [13, 20, 8, 39]
+    bars = stacked_bars("cats", (19, 207, 94, 0.7), data)
+    sets.append(bars)
 
-    j['labels'] = l
-    
-    d = []
-    for dset in datasets:
-        d.append({})
-        d[len(d) - 1]['data'] = dset
+    data = [19, 29, 28, 29]
+    bars = stacked_bars("gerbils", (89, 87, 194, 0.5), data)
+    sets.append(bars)
 
-    j['datasets'] = d
+    j = chart_bar(labels, sets)
+    print(j)
 
-    return json.dumps(j)
-
-def stackedbar_chart(labels, stackedbarsets):
-    j = {}
-    l = labels
-    j['labels'] = l
-
-    d = []
-    for dset in stackedbarsets:
-        d.append({})
-        i = len(d) - 1
-        d[i]['type'] = "\'bar\',"
-        name = "\'"
-        name += dset.label
-        name += "\',"
-        d[i]['label'] = name
-        color = "\'"
-        color += dset.rgba
-        color += "\',"
-        d[i]['backgroundcolor'] = color
-        d[i]['data'] = dset.data
-
-    j['datasets'] = d
-
-    return json.dumps(j)
-
-
-def main():
-    labels = ["red", "green", "blue"]
-    dataset = [170, 20, 25]
-    colors = []
-    colors.append((100, 200, 100, 0.5))
-    colors.append((200, 100, 100, 0.5))
-    colors.append((100, 100, 200, 0.5))
-    pslices = [pie_slices(labels, colors, dataset)]
-
-    labels = ["red", "green", "blue"]
-    dataset = [140, 220, 25]
-    colors = []
-    colors.append((130, 20, 105, 0.5))
-    colors.append((200, 120, 230, 0.5))
-    colors.append((100, 200, 200, 0.7))
-    pslices.append(pie_slices(labels, colors, dataset))
-
-    j = pie_chart(pslices)
+    labels = [0, 1, 2, 3, 4, 5]
+    data = []
+    data.append(line_data([10, 20, 30, 40, 35, 25], "cows"))
+    data.append(line_data([1, 2, 3, 4, 3.5, 2.5], "chickens"))
+    j = chart_line(labels, data)
 
     file = open('json.txt', 'w')
     file.write(str(j))
     file.close()
     print(j)
     return
-
-main()
