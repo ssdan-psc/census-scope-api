@@ -18,8 +18,8 @@ $(document).ready(function() {
     success: function(data) {
       var datasource = JSON.parse(data)
       console.log(datasource)
-      pieChart = new Chart(pie_ctx, { 
-        type: 'pie',
+      pieChart = new Chart(pie_ctx, {
+        type: 'pie', // This whole part will be replaced by json_builder
         data: datasource
       });
     }
@@ -31,14 +31,11 @@ $(document).ready(function() {
     async: false,
     type: 'GET',
     url: 'http://localhost:5000/trend?topic=' + 'population' + '&geo=united%20states',
-    error: function (jqXHR, exception) {
-      console.log(exception)
-    },
     success: function(data) {
       var datasource = JSON.parse(data)
       console.log(datasource)
-      lineChart = new Chart(line_ctx, {
-        type: 'line',
+      lineChart = new Chart(line_ctx, { 
+        type: 'line', // This whole part will be replaced by json_builder
         data: datasource,
         fill: false,
         options: {
@@ -71,22 +68,22 @@ $(document).ready(function() {
        type: 'GET',
        url: url,
        success: function(data) {
-            var datasource = JSON.parse(data)
-            console.log(datasource)
-            pieChart.destroy();
-            pieChart = new Chart(pie_ctx, {
-                                                type: 'pie',
-                                                data: datasource,
-                                                options: {
-                                                  animation: {
-                                                    duration: 1000,
-                                                    animateRotate: false,
-                                                    animateScale: true,
-                                                  },
-                                                  circumference: 2 * Math.PI,
-                                                  cutoutPercentage: 0,
-                                                }
-                                              });
+        var datasource = JSON.parse(data)
+        console.log(datasource)
+        pieChart.destroy();
+        pieChart = new Chart(pie_ctx, { 
+          type: 'pie',  // This whole part will be replaced by json_builder
+          data: datasource,
+          options: {
+            animation: {
+              duration: 1000,
+              animateRotate: false,
+              animateScale: true,
+            },
+            circumference: 2 * Math.PI,
+            cutoutPercentage: 0,
+          }
+        });
        }
     });
   });
@@ -113,7 +110,7 @@ $(document).ready(function() {
 
         lineChart.destroy()
         lineChart = new Chart(line_ctx, 
-          {type: 'line',
+          {type: 'line', // This whole part will be replaced by json_builder
           data: datasource,
           options: {
             title: {
@@ -211,7 +208,7 @@ $(document).ready(function() {
     };
 
     barChart = new Chart(bar_ctx, {
-        type: 'bar',
+        type: 'bar',  // This whole part will be replaced by json_builder
         data: barChartData,
         options: {
             scales: {
