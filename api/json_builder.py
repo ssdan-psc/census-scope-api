@@ -159,10 +159,15 @@ def chart_line(labels, datasets):
     for lines in datasets:
         j += "{"
         j += '"label": \"'
+        print(lines.label)
         j += lines.label
         j += '\", "data": '
         j += str(lines.data)
-        j += "},"
+        j += "}"
+
+        if lines != datasets[-1]:
+            j += ","
+            
     j += "]}"
 
     return j
