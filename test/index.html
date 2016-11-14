@@ -1,31 +1,78 @@
 <!doctype html>
 <html lang="en">
-<head>
-	 <meta charset="utf-8">
-	 <title>Census Scope</title>
-  	 <meta name="description" content="Census Scope Sample Charts">
-     <meta name="author" content="SSDAN">
 
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
-	 <script src="charts.js"></script>
+<head>
+    <meta charset="utf-8">
+    <title>Census Scope</title>
+    <meta name="description" content="Census Scope Sample Charts">
+    <meta name="author" content="SSDAN">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
+    <script src="charts.js"></script>
 </head>
 
 <body>
-    <div style="width: 33%">
+    <div style="width: 40%">
+        <h1 style="text-align:center">Pie Chart</h1>
         <canvas id="pieChart" width="400" height="400"></canvas>
-        <button onclick="download_csv_pie()">Download CSV (Pie)</button>
-    	<button onclick="changedata_line()">Change Data Set (Line)</button>
     </div>
-    <div style="width: 33%">
-        <canvas id="lineChart" width="400" height="400"></canvas>
+    <form id="pie_form">
+        <select name="geo">
+            <option selected disabled>State</option>
+            <option value="connecticut">Connecticut</option>
+            <option value="vermont">Vermont</option>
+            <option value="new hampshire">New Hampshire</option>
+            <option value="maine">Maine</option>
+        </select>
+
+        <select name="year">
+            <option selected disabled>Year</option>
+            <option value="2010">2010</option>
+            <option value="2015">2015</option>
+        </select>
+
+        <button id="pie_button" type="submit">Generate Chart</button>
+    </form>
+    <p>
+        <button onclick="">Download Graph</button>
         <button onclick="download_csv_pie()">Download CSV (Pie)</button>
-    	<button onclick="changedata_line()">Change Data Set (Line)</button>
-    </div>
-    <div style="width: 33%">
-        <canvas id="barChart" width="400" height="400"></canvas>
-        <button onclick="download_csv_pie()">Download CSV (Pie)</button>
-    	<button onclick="changedata_line()">Change Data Set (Line)</button>
-    </div>
+        <button onclick="changedata_line()">Change Data Set (Line)</button>
+
+        <div style="width: 40%">
+            <canvas id="lineChart" width="400" height="400"></canvas>
+        </div>
+        <form id="line_form">
+            <select name="geo">
+                <option selected disabled>State</option>
+                <option value="connecticut">Connecticut</option>
+                <option value="vermont">Vermont</option>
+                <option value="new hampshire">New Hampshire</option>
+                <option value="maine">Maine</option>
+            </select>
+            <button id="line_button" type="submit">Generate Chart</button>
+        </form>
+        <p>
+            <button onclick="">Download Graph</button>
+            <button onclick="download_csv_pie()">Download CSV (Pie)</button>
+            <button onclick="changedata_line()">Change Data Set (Line)</button>
+
+            <div style="width: 40%">
+                <canvas id="barChart" width="400" height="400"></canvas>
+            </div>
+            <form id="bar_form">
+                <select name="geo">
+                    <option selected disabled>State</option>
+                    <option value="connecticut">Connecticut</option>
+                    <option value="vermont">Vermont</option>
+                    <option value="new hampshire">New Hampshire</option>
+                    <option value="maine">Maine</option>
+                </select>
+                <button id="bar_button" type="submit">Generate Chart</button>
+            </form>
+            <p>
+                <button onclick="">Download Graph</button>
+                <button onclick="download_csv_pie()">Download CSV (Pie)</button>
+                <button onclick="changedata_line()">Change Data Set (Line)</button>
 
 </body>
