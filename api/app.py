@@ -1,9 +1,11 @@
 from flask import Flask, jsonify, request, make_response
 from flask.ext.mysql import MySQL
+from flask_cors import CORS, cross_origin
 
 from helper import get_cols
 
 app = Flask(__name__)
+CORS(app)
 
 mysql = MySQL()
 
@@ -22,13 +24,15 @@ cursor = conn.cursor()
 TABLE = 'sample'
 
 @app.route('/')
+@cross_origin()
 def index():
     return "Hello, World!"
 
 
 @app.route('/trend', methods=['GET'])    # /trend?geo=GEO&topic=TOPIC
+@cross_origin()
 def get_trend_chart():
-    geo = request.args.get('geo')
+    geo = request.args.get('geo')   # TODO: Map geo to all possible geos
     topic = request.args.get('topic')		
 
     cols = get_cols(topic, cursor)
@@ -41,14 +45,16 @@ def get_trend_chart():
         print(query)
         cursor.execute(query)
         results = cursor.fetchall()
-        return jsonify(results)
+        response = jsonify(results)
+        return response
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
 
 @app.route('/pie', methods=['GET'])     # /pie?geo=GEO&topic=TOPIC&year=YEAR
+@cross_origin()
 def get_pie_chart():
-    geo = request.args.get('geo')
+    geo = request.args.get('geo')   # TODO: Map geo to all possible geos 
     topic = request.args.get('topic')
     year = request.args.get('year')
 
@@ -79,8 +85,10 @@ def get_pie_chart():
         return make_response("%s is an invalid topic" % (topic), 400)
 
 # @app.route('stackedbar/states/<state>', methods=['GET'])
+# @cross_origin()
 
 # @app.route('table/states/<state>', methods=['GET'])
+# @cross_origin()
 
 
 if __name__ == '__main__':
