@@ -126,17 +126,17 @@ def chart_bar(labels, datasets):
     """
 
     j = "{"
-    j += "labels: "
+    j += '"labels": '
     j += str(labels)
-    j += ", datasets: ["
+    j += ', "datasets": ['
     for bars in datasets:
         j += "{"
-        j += "type: 'bar',"
-        j += "label: \""
+        j += '"type": \'bar\','
+        j += '"label": \"'
         j += bars.label
-        j += "\", backgroundColor: \"rgba"
+        j += '\", "backgroundColor": \"rgba'
         j += str(bars.color)
-        j += "\", data: "
+        j += '\", "data": '
         j += str(bars.data)
         j += "},"
     j += "]}"
@@ -153,14 +153,14 @@ def chart_line(labels, datasets):
     """
 
     j = "{"
-    j += "labels: "
+    j += '"labels": '
     j += str(labels)
-    j += ", datasets: ["
+    j += ', "datasets": ['
     for lines in datasets:
         j += "{"
-        j += "label: \""
+        j += '"label": \"'
         j += lines.label
-        j += "\", data: "
+        j += '\", "data": '
         j += str(lines.data)
         j += "},"
     j += "]}"
