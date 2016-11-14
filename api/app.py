@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, make_response
-from flask.ext.mysql import MySQL
+from flaskext.mysql import MySQL
 from flask_cors import CORS, cross_origin
 
 from helper import get_cols
@@ -48,7 +48,7 @@ def get_trend_chart():
     if cols:
         query = "SELECT Year"
         for col in cols: 
-            query += "," + str(col[0])
+            query += "," + str(col)
         query += " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
         print(query)
         cursor.execute(query)
@@ -87,7 +87,7 @@ def get_pie_chart():
         if not results:
             return make_response("There is no data available for %s in %s in %s" % (topic, geo, year), 400)
         
-        # TODO: I am hard-coded in right now. Fix so that the only thing in cols is what needs to be returned. 
+        # TODO: I am hard-coded in right now. Fix so that the only thing in cols is what needs to be returned.
         labels = cols[1:6]
         data = results[0][1:6]
         
