@@ -31,6 +31,8 @@ colors = ["#FF6384",
           "#72ff62",
           "#ffa362"]
 
+# TODO: Be careful about bytes coming from SQL queries 
+
 @app.route('/')
 @cross_origin()
 def index():
@@ -43,18 +45,26 @@ def get_trend_chart():
     geo = request.args.get('geo')   # TODO: Map geo to all possible geos
     topic = request.args.get('topic')		
 
-    cols = get_cols(topic, cursor)
+    cols, label = get_cols(topic, cursor, 'trend')
     
     if cols:
         query = "SELECT Year"
         for col in cols: 
             query += "," + col.decode('utf-8')
         query += " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
-        print(query)
+
         cursor.execute(query)
         results = cursor.fetchall()
-        response = jsonify(results)
+
+        labels = []
+        data = []
+        for result in results:
+            labels.append(result[0])
+            data.append(result[1])
+
+        response = json_builder.chart_line(labels, [json_builder.Line_Data(data, label[0])])
         return response
+
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
@@ -66,7 +76,7 @@ def get_pie_chart():
     topic = request.args.get('topic')
     year = request.args.get('year')
 
-    cols = get_cols(topic, cursor)
+    cols, labels = get_cols(topic, cursor, 'pie')
 
     if cols:
         query = "SELECT "
@@ -76,7 +86,6 @@ def get_pie_chart():
                 query += ","
         
         query += " FROM " + TABLE + " WHERE AreaName='" + geo + "' AND Year=" + year
-        print(query)
 
         try:
             cursor.execute(query)
@@ -88,9 +97,7 @@ def get_pie_chart():
         if not results:
             return make_response("There is no data available for %s in %s in %s" % (topic, geo, year), 400)
         
-        # TODO: I am hard-coded in right now. Fix so that the only thing in cols is what needs to be returned.
-        labels = cols[1:6]
-        data = results[0][1:6]
+        data = results[0]
         
         c = []
         for i in range(0, len(data)):

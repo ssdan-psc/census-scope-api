@@ -9,51 +9,57 @@ $(document).ready(function() {
   var line_ctx = document.getElementById("lineChart");
   var bar_ctx = document.getElementById("barChart");
 
-    // Default Pie Chart
-    $.ajax({
-       async: false,
-       type: 'GET',
-       url: 'http://localhost:5000/pie?topic=' + topic + '&geo=united%20states&year=2010',
-       success: function(data) {
-            var datasource = JSON.parse(data)
-            console.log(datasource)
+  // TODO: Needs error handling
+  // Default Pie Chart
+  $.ajax({
+    async: false,
+    type: 'GET',
+    url: 'http://localhost:5000/pie?topic=' + topic + '&geo=united%20states&year=2010',
+    success: function(data) {
+      var datasource = JSON.parse(data)
+      console.log(datasource)
+      pieChart = new Chart(pie_ctx, { 
+        type: 'pie',
+        data: datasource
+      });
+    }
+  });
 
-            pieChart = new Chart(pie_ctx, 
-              {type: 'pie',
-              data: datasource,
-              options: {
-                animation: {
-                    duration: 1000,
-                    animateRotate: false,
-                    animateScale: true,
-                  },
-                  circumference: 2 * Math.PI,
-                  cutoutPercentage: 0,
-                }
-              });
-          }
-    });
-
+  // TODO: Needs error handling
   // Default Trend Chart
   $.ajax({
     async: false,
     type: 'GET',
-    url: 'http://localhost:5000/trend?topic=' + topic + '&geo=united%20states',
+    url: 'http://localhost:5000/trend?topic=' + 'population' + '&geo=united%20states',
+    error: function (jqXHR, exception) {
+      console.log(exception)
+    },
     success: function(data) {
       var datasource = JSON.parse(data)
       console.log(datasource)
       lineChart = new Chart(line_ctx, {
         type: 'line',
-        data: datasource
+        data: datasource,
+        fill: false,
+        options: {
+          scales: {
+            yAxes: [{
+              ticks:{
+                beginAtZero: true
+              }
+            }]
+          }
+        }
       });
     }
   });
 
   // Default Stacked Bar Chart
 
+  // TODO: Needs error handling
   // Update Pie Chart
   $( "#pie_form" ).on( "submit", function( event ) {
-    event.preventDefault();
+     event.preventDefault();
      var options = $( this ).serialize();
      var url = 'http://localhost:5000/pie?topic=' + topic + '&' + options
      console.log(url)
@@ -85,9 +91,10 @@ $(document).ready(function() {
     });
   });
 
-// Update Trend Chart 
-$( "#trend_form" ).on( "submit", function( event ) {
-    event.preventDefault();
+  // TODO: Needs error handling
+  // Update Trend Chart 
+  $( "#trend_form" ).on( "submit", function( event ) {
+     event.preventDefault();
      var topic = window.location.search.split("=")[1]
      var options = $( this ).serialize();
      var url = 'http://localhost:5000/trend?topic=' + topic + '&' + options
