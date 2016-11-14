@@ -3,6 +3,7 @@ from flask.ext.mysql import MySQL
 from flask_cors import CORS, cross_origin
 
 from helper import get_cols
+import json_builder
 
 app = Flask(__name__)
 CORS(app)
@@ -22,6 +23,13 @@ conn = mysql.connect()
 cursor = conn.cursor()
 
 TABLE = 'sample'
+
+colors = ["#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362"]
 
 @app.route('/')
 @cross_origin()
@@ -63,7 +71,7 @@ def get_pie_chart():
     if cols:
         query = "SELECT "
         for col in cols:
-            query += str(col[0]) 
+            query += str(col) 
             if col != cols[-1]:
                 query += ","
         
@@ -79,7 +87,18 @@ def get_pie_chart():
         if not results:
             return make_response("There is no data available for %s in %s in %s" % (topic, geo, year), 400)
         
-        return jsonify(results)
+        # TODO: I am hard-coded in right now. Fix so that the only thing in cols is what needs to be returned. 
+        labels = cols[1:6]
+        data = results[0][1:6]
+        
+        c = []
+        for i in range(0, len(data)):
+            c.append(colors[i]);
+
+        dataset = json_builder.Pie_Slices(colors, data)
+        j = json_builder.chart_pie(labels, dataset)
+
+        return j
 
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
