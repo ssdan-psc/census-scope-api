@@ -62,7 +62,7 @@ def chart_pie(labels, dataset):
     """
 
     j = '{'
-    j += '"type": \'pie\', "data": '
+    j += '"type": \"pie\", "data": '
     j += "{"
     j += '"labels": ['
     for label in labels:
@@ -110,15 +110,9 @@ def chart_pie(labels, dataset):
     j += "]}"
     j += "]},"
     j += '"options": { "animation": { "duration": 1000, "animateRotate": false,'
-    j += '"animateScale": true, }, "circumference": 2 * MATH.PI, "cutoutPercentage": 0,'
+    j += '"animateScale": true}'
     j += '} }'
 
-    # for color in dataset.colors:
-    #     j += "\"rgba"
-    #     j += str(color)
-    #     j += "\","
-    # j += "]}"
-    # j += "]}"
 
     return j
 
@@ -163,7 +157,7 @@ def chart_line(labels, datasets):
     """
 
     j = '{'
-    j += '"type": \'line\', "data": '
+    j += '"type": \"line\", "data": '
     j += "{"
     j += '"labels": '
     j += str(labels)
@@ -181,7 +175,7 @@ def chart_line(labels, datasets):
             j += ","
             
     j += "]},"
-    j += '"options": { "title": { "display": true, "text": \'Line Chart\',},}}'
+    j += '"options": { "title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
 
     return j
 

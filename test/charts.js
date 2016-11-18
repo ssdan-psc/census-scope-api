@@ -9,6 +9,7 @@ $(document).ready(function() {
   var line_ctx = document.getElementById("lineChart");
   var bar_ctx = document.getElementById("barChart");
 
+
   // TODO: Needs error handling
   // Default Pie Chart
   $.ajax({
@@ -16,12 +17,10 @@ $(document).ready(function() {
     type: 'GET',
     url: 'http://localhost:5000/pie?topic=' + topic + '&geo=united%20states&year=2010',
     success: function(data) {
+      console.log(data)
       var datasource = JSON.parse(data)
       console.log(datasource)
-      pieChart = new Chart(pie_ctx, {
-        type: 'pie', // This whole part will be replaced by json_builder
-        data: datasource
-      });
+      pieChart = new Chart(pie_ctx, datasource);
     }
   });
 
@@ -34,20 +33,7 @@ $(document).ready(function() {
     success: function(data) {
       var datasource = JSON.parse(data)
       console.log(datasource)
-      lineChart = new Chart(line_ctx, { 
-        type: 'line', // This whole part will be replaced by json_builder
-        data: datasource,
-        fill: false,
-        options: {
-          scales: {
-            yAxes: [{
-              ticks:{
-                beginAtZero: true
-              }
-            }]
-          }
-        }
-      });
+      lineChart = new Chart(line_ctx, datasource);
     }
   });
 
@@ -126,7 +112,6 @@ $(document).ready(function() {
 
 
     window.download_csv_pie = function() {
-      var img = pieChart.toBase64Image();
         var csv = 'Color,Value\n';
         console.log(data["datasets"][0]["data"])
         console.log(data["labels"])
@@ -222,6 +207,9 @@ $(document).ready(function() {
         }
     });
 
+
+
+    // Pass string and then switch
     download_img = function (chartVariable) {
         var img = chartVariable.toBase64Image();
         var hiddenElement = document.createElement('download');
