@@ -222,4 +222,13 @@ $(document).ready(function() {
         }
     });
 
+    download_img = function (chartVariable) {
+        var img = chartVariable.toBase64Image();
+        var hiddenElement = document.createElement('download');
+        hiddenElement.target = '_blank';
+        hiddenElement.href = img;
+        hiddenElement.download = 'img.jpg';
+        hiddenElement.click();
+    }
+
 });
