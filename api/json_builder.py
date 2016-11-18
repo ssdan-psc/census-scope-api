@@ -61,7 +61,9 @@ def chart_pie(labels, dataset):
     and labels[0] will be attributes of the same slice.
     """
 
-    j = "{"
+    j = '{'
+    j += '"type": \'pie\', "data": '
+    j += "{"
     j += '"labels": ['
     for label in labels:
         j+= '"' + label.decode('utf-8') + '"'
@@ -106,7 +108,10 @@ def chart_pie(labels, dataset):
             j += '"'
 
     j += "]}"
-    j += "]}"
+    j += "]},"
+    j += '"options": { "animation": { "duration": 1000, "animateRotate": false,'
+    j += '"animateScale": true, }, "circumference": 2 * MATH.PI, "cutoutPercentage": 0,'
+    j += '} }'
 
     # for color in dataset.colors:
     #     j += "\"rgba"
@@ -125,7 +130,9 @@ def chart_bar(labels, datasets):
     datasets: a list of stacked_bars objects, one for each dataset
     """
 
-    j = "{"
+    j = '{'
+    j = '"type": \'bar\', "data":'
+    j += "{"
     j += '"labels": '
     j += str(labels)
     j += ', "datasets": ['
@@ -140,6 +147,9 @@ def chart_bar(labels, datasets):
         j += str(bars.data)
         j += "},"
     j += "]}"
+    j += ','
+    j += '"options": { "scales": { "xAxes": [{"stacked": true,}],'
+    j += '"yAxes": [{"stacked": true }] } } }'
 
     return j
 
@@ -152,7 +162,9 @@ def chart_line(labels, datasets):
     datasets: a list of line_data objects, on for each dataset
     """
 
-    j = "{"
+    j = '{'
+    j += '"type": \'line\', "data": '
+    j += "{"
     j += '"labels": '
     j += str(labels)
     j += ', "datasets": ['
@@ -168,7 +180,8 @@ def chart_line(labels, datasets):
         if lines != datasets[-1]:
             j += ","
             
-    j += "]}"
+    j += "]},"
+    j += '"options": { "title": { "display": true, "text": \'Line Chart\',},}}'
 
     return j
 
@@ -198,38 +211,10 @@ def build_json(labels, datasets):
 
 
 def test():
-    labels = ['r', 'g', 'b']
-    data = [10, 11, 7]
-    c = []
-    c.append((100, 20, 40));
-    c.append((10, 200, 40));
-    c.append((10, 20, 255));
-    j = chart_pie(labels, pie_slices(c, data))
-    print(j)
-
-    
-    labels = ['abc', 'def', 'ghi', 'jkl']
-    sets = []
-
-    data = [10, 30, 40, 50]
-    bars = stacked_bars("dogs", (199, 27, 44, 0.9), data)
-    sets.append(bars)
-
-    data = [13, 20, 8, 39]
-    bars = stacked_bars("cats", (19, 207, 94, 0.7), data)
-    sets.append(bars)
-
-    data = [19, 29, 28, 29]
-    bars = stacked_bars("gerbils", (89, 87, 194, 0.5), data)
-    sets.append(bars)
-
-    j = chart_bar(labels, sets)
-    print(j)
-
     labels = [0, 1, 2, 3, 4, 5]
     data = []
-    data.append(line_data([10, 20, 30, 40, 35, 25], "cows"))
-    data.append(line_data([1, 2, 3, 4, 3.5, 2.5], "chickens"))
+    data.append(Line_Data([10, 20, 30, 40, 35, 25], "cows"))
+    data.append(Line_Data([1, 2, 3, 4, 3.5, 2.5], "chickens"))
     j = chart_line(labels, data)
 
     file = open('json.txt', 'w')
