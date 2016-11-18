@@ -16,8 +16,8 @@ VALUES ('TotalPopulation', 'population', 'Total Population', 0, 1, 0),
 	('SomeColl', 'education', 'Some College', 0, 0, 1),
 	('CollGrad', 'education', 'College', 0, 0, 1), 
 	('GradProf', 'education', 'Graduate / Professional', 0, 0, 1), 
-	('PerLTHS', 'education', ' Percent Less than HS', 1, 0, 0),
-	('PerHSGrad', 'education', 'Percent HS', 1, 0, 0),
-	('PerSomeColl', 'education', 'Percent Some College', 1, 0, 0),
-	('PerCollGrad', 'education', 'Percent College', 1, 0, 0),
-	('PerGradProf', 'education', 'Percent Graduate / Professional', 1, 0, 0);
+	('PerLTHS', 'education', 'Less than HS', 1, 0, 0),
+	('PerHSGrad', 'education', 'HS', 1, 0, 0),
+	('PerSomeColl', 'education', 'Some College', 1, 0, 0),
+	('PerCollGrad', 'education', 'College', 1, 0, 0),
+	('PerGradProf', 'education', 'Graduate / Professional', 1, 0, 0);

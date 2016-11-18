@@ -84,7 +84,7 @@ def get_pie_chart():
             query += col.decode('utf-8')
             if col != cols[-1]:
                 query += ","
-        
+                
         query += " FROM " + TABLE + " WHERE AreaName='" + geo + "' AND Year=" + year
 
         try:
