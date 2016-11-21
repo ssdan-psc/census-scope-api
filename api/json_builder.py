@@ -136,7 +136,7 @@ def chart_bar(labels, datasets):
         j += '"type": \"bar\",'
         j += '"label": \"'
         j += str(bars.label)
-        j += '\", "backgroundColor":["' + bars.color + '"]'
+        j += '\", "backgroundColor":"' + bars.color + '"'
         j += ', "data": ['
         
         for d in bars.data:
