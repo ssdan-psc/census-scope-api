@@ -1,5 +1,11 @@
 $(document).ready(function() {
-  var topic = window.location.search.split("=")[1] // TODO: Fix this 
+
+  var param = window.location.search.substring(1).split("=")[0];
+  if (param == 'topic'){
+    var topic = window.location.search.substring(1).split("=")[1]; // TODO: Fix this 
+  } else {
+    throw "Need topic";
+  }
 
   var pieChart;
   var lineChart;
@@ -20,11 +26,11 @@ $(document).ready(function() {
     type: 'GET',
     url: 'http://localhost:5000/pie?topic=' + topic + '&geo=united%20states&year=2010',
     success: function(data) {
-      var full_pie_json = JSON.parse(data[0])
-      console.log(data[1])
+      var full_pie_json = JSON.parse(data)
       pieChart = new Chart(pie_ctx, full_pie_json);
     }
   });
+
 
   // TODO: Needs error handling
   // Default Trend Chart
@@ -38,6 +44,8 @@ $(document).ready(function() {
     }
   });
 
+
+  // TODO: Error handling
   // Default Stacked Bar Chart
   $.ajax({
     async: false,
@@ -49,37 +57,22 @@ $(document).ready(function() {
     }
   });
 
+
   // TODO: Needs error handling
   // Update Pie Chart
   $( "#pie_form" ).on( "submit", function( event ) {
      event.preventDefault();
      var options = $( this ).serialize();
      var url = 'http://localhost:5000/pie?topic=' + topic + '&' + options
-     console.log(url)
-     
-     var datasource = {labels: [], datasets: []};
 
      $.ajax({
        async: false,
        type: 'GET',
        url: url,
        success: function(data) {
-        var datasource = JSON.parse(data)
-        console.log(datasource)
+        var full_pie_json = JSON.parse(data)
         pieChart.destroy();
-        pieChart = new Chart(pie_ctx, { 
-          type: 'pie',  // This whole part will be replaced by json_builder
-          data: datasource,
-          options: {
-            animation: {
-              duration: 1000,
-              animateRotate: false,
-              animateScale: true,
-            },
-            circumference: 2 * Math.PI,
-            cutoutPercentage: 0,
-          }
-        });
+        pieChart = new Chart(pie_ctx, full_pie_json);
        }
     });
   });
@@ -91,36 +84,37 @@ $(document).ready(function() {
      var topic = window.location.search.split("=")[1]
      var options = $( this ).serialize();
      var url = 'http://localhost:5000/trend?topic=' + topic + '&' + options
-     console.log(url)
-     
-     var datasource = {labels: [], datasets: []};
 
      $.ajax({
        async: false,
        type: 'GET',
        url: url,
        success: function(data) {
-        var datasource = {labels: ["2010", "2015"], datasets: [{ data:[3577073, 3590886]}]};
-        //var datasource = JSON.parse(data)
-        console.log(datasource)
-
+        var full_line_json = JSON.parse(data);
         lineChart.destroy()
-        lineChart = new Chart(line_ctx, 
-          {type: 'line', // This whole part will be replaced by json_builder
-          data: datasource,
-          options: {
-            title: {
-              display: true,
-              text: 'Line Chart',
-            },
-          }
-        });
+        lineChart = new Chart(line_ctx, full_line_json);
        }
     });
   });
 
   // Update Stacked Bar Chart
+   $( "#bar_form" ).on( "submit", function( event ) {
+     event.preventDefault();
+     var topic = window.location.search.split("=")[1]
+     var options = $( this ).serialize();
+     var url = 'http://localhost:5000/stacked?topic=' + topic + '&' + options
 
+     $.ajax({
+       async: false,
+       type: 'GET',
+       url: url,
+       success: function(data) {
+        var full_stacked_json = JSON.parse(data)
+        barChart.destroy()
+        barChart = new Chart(bar_ctx, full_stacked_json);
+       }
+    });
+  });
 
 
     window.download_csv_pie = function() {
@@ -145,48 +139,6 @@ $(document).ready(function() {
         hiddenElement.download = 'data.csv';
         hiddenElement.click();
     }
-
-    // var barChartData = {
-    //     labels: ["January", "February", "March", "April", "May", "June", "July"],
-    //     datasets: [{
-    //         type: 'bar',
-    //         label: 'Dataset 1',
-    //         backgroundColor: "rgba(220,220,220,0.7)",
-    //         data: [1, 2, 3, 4, 5, 6, 7]
-    //     }, {
-    //         type: 'bar',
-    //         label: 'Dataset 2',
-    //         backgroundColor: "rgba(151,187,205,0.7)",
-    //         data: [2, 3, 4, 5, 6, 7, 8]
-    //     }, {
-    //         type: 'bar',
-    //         label: 'Dataset 3',
-    //         backgroundColor: "rgba(151,187,205,0.7)",
-    //         data: [4, 3, 2, 1, 2, 3]
-    //     }, {
-    //         type: 'bar',
-    //         label: 'Dataset 4',
-    //         backgroundColor: "rgba(191,107,205,0.7)",
-    //         data: [5, 1, 2, 3, 5, 7, 1],
-    //         borderColor: 'white',
-    //         borderWidth: 0
-    //     }]
-    // };
-
-    // barChart = new Chart(bar_ctx, {
-    //     type: 'bar',  // This whole part will be replaced by json_builder
-    //     data: barChartData,
-    //     options: {
-    //         scales: {
-    //             xAxes: [{
-    //                 stacked: true,
-    //             }],
-    //             yAxes: [{
-    //                 stacked: true
-    //             }]
-    //         }
-    //     }
-    // });
 
 
 

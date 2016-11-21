@@ -106,7 +106,7 @@ def get_pie_chart():
         dataset = json_builder.Pie_Slices(colors, data)
         j = json_builder.chart_pie(labels, dataset)
 
-        return make_response((j, "testing"))
+        return j
 
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
