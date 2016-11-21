@@ -19,12 +19,13 @@
     </div>
     <form id="pie_form">
         <select name="geo">
-        	<option disabled>Geographic Area</option>
-            <option selected value="United States">United States</option>
-            <option value="connecticut">Connecticut</option>
-            <option value="vermont">Vermont</option>
-            <option value="new hampshire">New Hampshire</option>
-            <option value="maine">Maine</option>
+            <option selected>United States</option>
+            <optgroup label="State">
+                <option>Connecticut</option>
+                <option>Vermont</option>
+                <option>New Hampshire</option>
+                <option>Maine</option>
+            </optgroup>
         </select>
 
         <select name="year">
@@ -36,8 +37,8 @@
         <button id="pie_button" type="submit">Generate Chart</button>
     </form>
     <p>
-        <button onclick="">Download Graph</button>
-        <button onclick="download_csv_pie()">Download CSV (Pie)</button>
+        <button onclick="download_img('pie')">Download Graph</button>
+        <button onclick="download_csv('pie')">Download CSV</button>
 
         <div style="width: 40%">
         	<h1 style="text-align:center">Trend Chart</h1>
@@ -46,16 +47,18 @@
         <form id="trend_form">
             <select name="geo">
                 <option selected>United States</option>
-                <option value="connecticut">Connecticut</option>
-                <option value="vermont">Vermont</option>
-                <option value="new hampshire">New Hampshire</option>
-                <option value="maine">Maine</option>
+                <optgroup label="State">
+                    <option>Connecticut</option>
+                    <option>Vermont</option>
+                    <option>New Hampshire</option>
+                    <option>Maine</option>
+                </optgroup>
             </select>
             <button id="line_button" type="submit">Generate Chart</button>
         </form>
         <p>
-        	<button onclick="">Download Graph</button>
-            <button onclick="download_csv_pie()">Download CSV (Pie)</button>
+        	<button onclick="download_image('trend')">Download Graph</button>
+            <button onclick="download_csv('trend')">Download CSV</button>
 
             <div style="width: 40%">
             	<h1 style="text-align:center">Stacked Bar Chart</h1>
@@ -63,16 +66,18 @@
             </div>
             <form id="bar_form">
                 <select name="geo">
-                    <option selected disabled>State</option>
-                    <option value="connecticut">Connecticut</option>
-                    <option value="vermont">Vermont</option>
-                    <option value="new hampshire">New Hampshire</option>
-                    <option value="maine">Maine</option>
+                    <option selected>United States</option>
+                    <optgroup label="State">
+                        <option>Connecticut</option>
+                        <option>Vermont</option>
+                        <option>New Hampshire</option>
+                        <option>Maine</option>
+                    </optgroup>
                 </select>
                 <button id="bar_button" type="submit">Generate Chart</button>
             </form>
             <p>
-                <button onclick="">Download Graph</button>
-                <button onclick="download_csv_pie()">Download CSV (Pie)</button>
+                <button onclick="download_img('stacked')">Download Graph</button>
+                <button onclick="download_csv('stacked')">Download CSV</button>
 
 </body>

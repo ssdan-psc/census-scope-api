@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   var param = window.location.search.substring(1).split("=")[0];
   if (param == 'topic'){
-    var topic = window.location.search.substring(1).split("=")[1]; // TODO: Fix this 
+    var topic = window.location.search.substring(1).split("=")[1];
   } else {
     throw "Need topic";
   }
@@ -26,7 +26,8 @@ $(document).ready(function() {
     type: 'GET',
     url: 'http://localhost:5000/pie?topic=' + topic + '&geo=united%20states&year=2010',
     success: function(data) {
-      var full_pie_json = JSON.parse(data)
+      var full_pie_json = JSON.parse(data)['chart']
+      pie_csv = JSON.parse(data)['csv']
       pieChart = new Chart(pie_ctx, full_pie_json);
     }
   });
@@ -37,9 +38,11 @@ $(document).ready(function() {
   $.ajax({
     async: false,
     type: 'GET',
+    // TODO: Population hard-coded in 
     url: 'http://localhost:5000/trend?topic=' + 'population' + '&geo=united%20states',
     success: function(data) {
-      var full_line_json = JSON.parse(data)
+      var full_line_json = JSON.parse(data)['chart']
+      trend_csv = JSON.parse(data)['csv']
       lineChart = new Chart(line_ctx, full_line_json);
     }
   });
@@ -52,11 +55,13 @@ $(document).ready(function() {
     type: 'GET',
     url: 'http://localhost:5000/stacked?topic=' + 'education' + '&geo=united%20states',
     success: function(data) {
-      var full_stacked_json = JSON.parse(data)
+      var full_stacked_json = JSON.parse(data)['chart']
+      stacked_csv = JSON.parse(data)['csv']
       barChart = new Chart(bar_ctx, full_stacked_json);
     }
   });
 
+  // TODO: Default Table
 
   // TODO: Needs error handling
   // Update Pie Chart
@@ -70,7 +75,8 @@ $(document).ready(function() {
        type: 'GET',
        url: url,
        success: function(data) {
-        var full_pie_json = JSON.parse(data)
+        var full_pie_json = JSON.parse(data)['chart']
+        pie_csv = JSON.parse(data)['csv']
         pieChart.destroy();
         pieChart = new Chart(pie_ctx, full_pie_json);
        }
@@ -90,13 +96,15 @@ $(document).ready(function() {
        type: 'GET',
        url: url,
        success: function(data) {
-        var full_line_json = JSON.parse(data);
+        var full_line_json = JSON.parse(data)['chart']
+        trend_csv = JSON.parse(data)['csv']
         lineChart.destroy()
         lineChart = new Chart(line_ctx, full_line_json);
        }
     });
   });
 
+  // TODO: Needs error handling
   // Update Stacked Bar Chart
    $( "#bar_form" ).on( "submit", function( event ) {
      event.preventDefault();
@@ -109,47 +117,49 @@ $(document).ready(function() {
        type: 'GET',
        url: url,
        success: function(data) {
-        var full_stacked_json = JSON.parse(data)
+        var full_stacked_json = JSON.parse(data)['chart']
+        stacked_csv = JSON.parse(data)['csv']
         barChart.destroy()
         barChart = new Chart(bar_ctx, full_stacked_json);
        }
     });
   });
 
+  // TODO: Update Table 
 
-    window.download_csv_pie = function() {
-        var csv = 'Color,Value\n';
-        console.log(data["datasets"][0]["data"])
-        console.log(data["labels"])
-        for (i = 0; i < data["datasets"][0]["data"].length; i++)
-        {
-          csv += data["labels"][i];
-          csv += ",";
-          csv += data["datasets"][0]["data"][i];
-          csv += "\n";
-          }
+  download_csv = function(chartVariable) {
+    var csv; 
 
-        console.log(csv);
-        var hiddenElement = document.createElement('a');
-        hiddenElement.target = '_blank';
-        hiddenElement.href = img
-        hiddenElement.download = 'img.jpg';
-        hiddenElement.click();
-        hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-        hiddenElement.download = 'data.csv';
-        hiddenElement.click();
+    if (chartVariable == "pie") {
+      csv = pie_csv
+    } else if (chartVariable == 'trend') {
+      csv = trend_csv
+    } else if (chartVariable == 'stacked') {
+      csv = stacked_csv
     }
 
+    var hiddenElement = document.createElement('a');
+    hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
+    hiddenElement.download = 'data.csv';  // TODO: Change Name
+    hiddenElement.click();
+  };
 
-
-    // Pass string and then switch
-    download_img = function (chartVariable) {
-        var img = chartVariable.toBase64Image();
-        var hiddenElement = document.createElement('download');
-        hiddenElement.target = '_blank';
-        hiddenElement.href = img;
-        hiddenElement.download = 'img.jpg';
-        hiddenElement.click();
+  download_img = function (chartVariable) {
+    var img;
+      
+    if (chartVariable == "pie") {
+      img = pieChart.toBase64Image();      
+    } else if (chartVariable == 'trend') {
+      img = lineChart.toBase64Image();
+    } else if (chartVariable == 'stacked') {
+      img = barChart.toBase64Image();
     }
+
+    var hiddenElement = document.createElement('download');
+    hiddenElement.target = '_blank';
+    hiddenElement.href = img;      
+    hiddenElement.download = 'img.jpg'; // TODO: Change Name
+    hiddenElement.click();
+  };
 
 });

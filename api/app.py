@@ -1,6 +1,9 @@
 from flask import Flask, jsonify, request, make_response
 from flaskext.mysql import MySQL
 from flask_cors import CORS, cross_origin
+import json
+import csv
+import io
 
 from helper import get_cols
 import json_builder
@@ -38,17 +41,18 @@ colors = ["#FF6384",
 def index():
     return "Hello, World!"
 
-
-@app.route('/trend', methods=['GET'])    # /trend?geo=GEO&topic=TOPIC
+# /trend?geo=GEO&topic=TOPIC
+@app.route('/trend', methods=['GET'])
 @cross_origin()
 def get_trend_chart():
     geo = request.args.get('geo')   # TODO: Map geo to all possible geos
     topic = request.args.get('topic')		
 
-    cols, label = get_cols(topic, cursor, 'trend')
+    cols, data_labels = get_cols(topic, cursor, 'trend')
     
     if cols:
         query = "SELECT Year"
+        data_labels.insert(0, 'Year')
         for col in cols: 
             query += "," + col.decode('utf-8')
         query += " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
@@ -61,15 +65,27 @@ def get_trend_chart():
         for result in results:
             labels.append(result[0])
             data.append(result[1])
+      
+        response = {}
+        chart = json_builder.chart_line(labels, [json_builder.Line_Data(data, data_labels[1])])
+        response["chart"] = json.loads(chart)
 
-        response = json_builder.chart_line(labels, [json_builder.Line_Data(data, label[0])])
-        return response
+        with io.BytesIO() as csv_string:
+            writer = csv.writer(csv_string)
+            writer.writerow(data_labels)
+            for row in results: 
+                writer.writerow(row)
+
+            response["csv"] = csv_string.getvalue()
+
+        return json.dumps(response)
 
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
 
-@app.route('/pie', methods=['GET'])     # /pie?geo=GEO&topic=TOPIC&year=YEAR
+# /pie?geo=GEO&topic=TOPIC&year=YEAR
+@app.route('/pie', methods=['GET'])     
 @cross_origin()
 def get_pie_chart():
     geo = request.args.get('geo')   # TODO: Map geo to all possible geos 
@@ -104,13 +120,25 @@ def get_pie_chart():
             c.append(colors[i]);
 
         dataset = json_builder.Pie_Slices(colors, data)
-        j = json_builder.chart_pie(labels, dataset)
 
-        return j
+        response = {}
+        chart = json_builder.chart_pie(labels, dataset)
+        response['chart'] = json.loads(chart)
+       
+        with io.BytesIO() as csv_string:
+            writer = csv.writer(csv_string)
+            writer.writerow(labels)
+            for row in results: 
+                writer.writerow(row)
+
+            response["csv"] = csv_string.getvalue()
+
+        return json.dumps(response)
 
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
+# /stacked?topic=TOPIC&geo=GEO
 @app.route('/stacked', methods=['GET'])
 @cross_origin()
 def get_stacked_chart():
@@ -128,7 +156,7 @@ def get_stacked_chart():
         cursor.execute(query)
         results = cursor.fetchall()
 
-        labels= []
+        labels = []
         data = []
         temp = []
         print(results)
@@ -146,15 +174,49 @@ def get_stacked_chart():
 
             data.append(dataset)
         
-        response = json_builder.chart_bar(labels, data)
+        response = {}
+        chart = json_builder.chart_bar(labels, data)
+        response["chart"] = json.loads(chart)
+        response['csv'] = "test,test,test"      # TODO: Need csv
 
-        return response
+        return json.dumps(response)
 
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
-# @app.route('table/states/<state>', methods=['GET'])
-# @cross_origin()
+
+# /table?topic=TOPIC&geo=GEO
+@app.route('/table', methods=['GET'])
+@cross_origin()
+def get_table():
+    topic = request.args.get('topic')
+    geo = request.args.get('geo')
+
+    cols, labels = get_cols(topic, cursor, "tbl")
+
+    if cols:
+        query = "SELECT Year,"
+        #labels.insert(0, "Year")
+        for col in cols: 
+            query += col.decode('utf-8')
+            if col != cols[-1]:
+                query += ","
+        query += " FROM "  + TABLE + " WHERE AreaName = '" + geo + "'"
+
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        with io.BytesIO() as csv_string:
+            writer = csv.writer(csv_string)
+            writer.writerow(labels)
+            for row in results: 
+                writer.writerow(row)
+
+            return json.dumps(csv_string.getvalue())
+
+    else:
+        return make_response("%s is an invalid topic" % (topic), 400)
+
 
 
 if __name__ == '__main__':
