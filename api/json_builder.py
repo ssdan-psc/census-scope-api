@@ -125,24 +125,33 @@ def chart_bar(labels, datasets):
     """
 
     j = '{'
-    j = '"type": \'bar\', "data":'
+    j += '"type": \"bar\", "data":'
     j += "{"
     j += '"labels": '
     j += str(labels)
     j += ', "datasets": ['
+
     for bars in datasets:
         j += "{"
-        j += '"type": \'bar\','
+        j += '"type": \"bar\",'
         j += '"label": \"'
-        j += bars.label
-        j += '\", "backgroundColor": \"rgba'
-        j += str(bars.color)
-        j += '\", "data": '
-        j += str(bars.data)
-        j += "},"
+        j += str(bars.label)
+        j += '\", "backgroundColor":["' + bars.color + '"]'
+        j += ', "data": ['
+        
+        for d in bars.data:
+            j += str(d)
+
+            if d != bars.data[-1]:
+                j += ","
+        if bars != datasets[-1]:
+            j += "]},"
+        else:
+            j += "]}"
+
     j += "]}"
     j += ','
-    j += '"options": { "scales": { "xAxes": [{"stacked": true,}],'
+    j += '"options": { "scales": { "xAxes": [{"stacked": true}],'
     j += '"yAxes": [{"stacked": true }] } } }'
 
     return j
@@ -165,7 +174,6 @@ def chart_line(labels, datasets):
     for lines in datasets:
         j += "{"
         j += '"label": \"'
-        print(lines.label)
         j += lines.label
         j += '\", "data": '
         j += str(lines.data)

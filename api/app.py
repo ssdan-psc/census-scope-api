@@ -84,7 +84,7 @@ def get_pie_chart():
             query += col.decode('utf-8')
             if col != cols[-1]:
                 query += ","
-                
+
         query += " FROM " + TABLE + " WHERE AreaName='" + geo + "' AND Year=" + year
 
         try:
@@ -106,13 +106,52 @@ def get_pie_chart():
         dataset = json_builder.Pie_Slices(colors, data)
         j = json_builder.chart_pie(labels, dataset)
 
-        return j
+        return make_response((j, "testing"))
 
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
-# @app.route('stackedbar/states/<state>', methods=['GET'])
-# @cross_origin()
+@app.route('/stacked', methods=['GET'])
+@cross_origin()
+def get_stacked_chart():
+    geo = request.args.get('geo')   # TODO: Map geo to all possible geos
+    topic = request.args.get('topic')       
+
+    cols, data_labels = get_cols(topic, cursor, 'stacked_bar')
+    
+    if cols:
+        query = "SELECT Year"
+        for col in cols: 
+            query += "," + col.decode('utf-8')
+        query += " FROM "  + TABLE + " WHERE AreaName='" + geo + "'"
+
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+        labels= []
+        data = []
+        temp = []
+        print(results)
+        for result in results:
+            labels.append(result[0])
+            print(result)
+            for i in range(1, len(result)):
+                if result == results[0]:
+                    temp.append([result[i]])
+                else:
+                    temp[i - 1].append(result[i])
+
+        for i in range(0, len(temp)):
+            dataset = json_builder.Stacked_Bars(data_labels[i], colors[i], temp[i])
+
+            data.append(dataset)
+        
+        response = json_builder.chart_bar(labels, data)
+
+        return response
+
+    else:
+        return make_response("%s is an invalid topic" % (topic), 400)
 
 # @app.route('table/states/<state>', methods=['GET'])
 # @cross_origin()
