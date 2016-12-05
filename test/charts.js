@@ -118,25 +118,29 @@ $(document).ready(function() {
       //var full_stacked_json = JSON.parse(data)['chart']
       //stacked_csv = JSON.parse(data)['csv']
 
-      pyramidChart = new Chart(pyramid_ctx, {type: 'horizontalBar', data: {
-    labels: ["0-4", "5-12", "13-18", "19-24", "25-35", "36-45", "46-55", "56-65", "66+"],
-    datasets: [{
-      label: "Female",
-      backgroundColor: "rgba(255,99,132,0.8)",
-      borderColor: "rgba(255,99,132,1)",
-      hoverBackgroundColor: "rgba(255,99,132,0.5)",
-      hoverBorderColor: "rgba(255,99,132,1)",
-      data: [10, 9, 20, 41, 36, 35, 40, 35, 60],
-    }, {
-      label: "Male",
-      backgroundColor: "rgba(54,162,235,0.8)",
-      borderColor: "rgba(54,162,235,1)",
-      hoverBackgroundColor: "rgba(54,162,235,0.5)",
-      hoverBorderColor: "rgba(54,162,235,1)",
-      data: [-10, -8, -20, -39, -36, -27, -40, -33, -55]
-    }]
-  }
-   });
+      var data = {
+        labels: ["0-4", "5-12", "13-18", "19-24", "25-35", "36-45", "46-55", "56-65", "66+"],
+        datasets: [{
+          label: "Female",
+          backgroundColor: "rgba(255,99,132,0.8)",
+          borderColor: "rgba(255,99,132,1)",
+          hoverBackgroundColor: "rgba(255,99,132,0.5)",
+          hoverBorderColor: "rgba(255,99,132,1)",
+          data: [10, 9, 20, 41, 36, 35, 40, 35, 60],
+        }, {
+          label: "Male",
+          backgroundColor: "rgba(54,162,235,0.8)",
+          borderColor: "rgba(54,162,235,1)",
+          hoverBackgroundColor: "rgba(54,162,235,0.5)",
+          hoverBorderColor: "rgba(54,162,235,1)",
+          data: [-10, -8, -20, -39, -36, -27, -40, -33, -55]
+        }]
+      };
+      pyramidChart = new Chart(pyramid_ctx, {
+        type: 'horizontalBar', 
+        data: data});
+    }});
+  
 
   $ ( "chart_form" ).on( "submit" , function( event ) {
     event.preventDefault()
