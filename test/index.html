@@ -10,14 +10,23 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
     <script src="charts.js"></script>
+    <script src="/bower_components/Chart.HorizontalBar.js/Chart.HorizontalBar.js"></script>
+
+    <style>
+        table {
+            border: 1px solid #666;
+            width: 100%;
+        }
+        th {
+            background: #f8f8f8; 
+            font-weight: bold;
+            padding: 2px;
+        }
+    </style>
 </head>
 
 <body>
-    <div style="width: 40%">
-        <h1 style="text-align:center">Pie Chart</h1>
-        <canvas id="pieChart" width="400" height="400"></canvas>
-    </div>
-    <form id="pie_form">
+    <form id="chart_form">
         <select name="geo">
             <option selected>United States</option>
             <optgroup label="State">
@@ -34,50 +43,42 @@
             <option value="2015">2015</option>
         </select>
 
-        <button id="pie_button" type="submit">Generate Chart</button>
+        <button id="button" type="submit">Generate Charts</button>
     </form>
-    <p>
-        <button onclick="download_img('pie')">Download Graph</button>
-        <button onclick="download_csv('pie')">Download CSV</button>
 
-        <div style="width: 40%">
-        	<h1 style="text-align:center">Trend Chart</h1>
-            <canvas id="lineChart" width="400" height="400"></canvas>
-        </div>
-        <form id="trend_form">
-            <select name="geo">
-                <option selected>United States</option>
-                <optgroup label="State">
-                    <option>Connecticut</option>
-                    <option>Vermont</option>
-                    <option>New Hampshire</option>
-                    <option>Maine</option>
-                </optgroup>
-            </select>
-            <button id="line_button" type="submit">Generate Chart</button>
-        </form>
-        <p>
-        	<button onclick="download_image('trend')">Download Graph</button>
-            <button onclick="download_csv('trend')">Download CSV</button>
+    <div style="width: 40%">
+        <h1 style="text-align:center">Pie Chart</h1>
+        <canvas id="pieChart" width="400" height="400"></canvas>
+    </div>
+    <button onclick="download_img('pie')">Download Graph</button>
+    <button onclick="download_csv('pie')">Download CSV</button>
 
-            <div style="width: 40%">
-            	<h1 style="text-align:center">Stacked Bar Chart</h1>
-                <canvas id="barChart" width="400" height="400"></canvas>
-            </div>
-            <form id="bar_form">
-                <select name="geo">
-                    <option selected>United States</option>
-                    <optgroup label="State">
-                        <option>Connecticut</option>
-                        <option>Vermont</option>
-                        <option>New Hampshire</option>
-                        <option>Maine</option>
-                    </optgroup>
-                </select>
-                <button id="bar_button" type="submit">Generate Chart</button>
-            </form>
-            <p>
-                <button onclick="download_img('stacked')">Download Graph</button>
-                <button onclick="download_csv('stacked')">Download CSV</button>
+    <div style="width: 40%">
+        <h1 style="text-align:center">Trend Chart</h1>
+        <canvas id="lineChart" width="400" height="400"></canvas>
+    </div>
+    <button onclick="download_image('trend')">Download Graph</button>
+    <button onclick="download_csv('trend')">Download CSV</button>
 
+     <div style="width: 40%">
+        <h1 style="text-align:center">Stacked Bar Chart</h1>
+        <canvas id="barChart" width="400" height="400"></canvas>
+    </div>
+    <button onclick="download_img('stacked')">Download Graph</button>
+    <button onclick="download_csv('stacked')">Download CSV</button>
+    
+    <div style="width: 40%">
+        <h1 style="text-align:center">Table</h1>
+        <table id="Table"></table>
+    </div>
+    <button onclick="download_img('table')">Download Graph</button>
+    <button onclick="download_csv('table')">Download CSV</button>
+
+    <div style="width: 40%">
+        <h1 style="text-align:center">Pyramid Chart</h1>
+        <canvas id="pyramidChart" width="400" height="400"></canvas>
+    </div>
+    <button onclick="download_img('stacked')">Download Graph</button>
+    <button onclick="download_csv('stacked')">Download CSV</button>
+    
 </body>
