@@ -196,7 +196,7 @@ def get_table():
 
     if cols:
         query = "SELECT Year,"
-        #labels.insert(0, "Year")
+        labels.insert(0, "Year")
         for col in cols: 
             query += col.decode('utf-8')
             if col != cols[-1]:
@@ -217,6 +217,16 @@ def get_table():
     else:
         return make_response("%s is an invalid topic" % (topic), 400)
 
+# /pyramid?topic=TOPIB&geo=GEO
+@app.route('/pyramid', methods=['GET'])
+@cross_origin()
+def get_pyramid():
+    topic = request.args.get('topic')
+    geo = request.args.get('geo')
+
+    #cols, labels = get_cols(topic, cursor, "pyramid")
+
+    return json.dumps('hi')
 
 
 if __name__ == '__main__':
