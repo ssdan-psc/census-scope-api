@@ -28,7 +28,13 @@ $(document).ready(function() {
   create_table = function(table, jsondata) {
     var tr0 = document.createElement('tr');
     for (var i = 0; i < jsondata[0].length; i++) {
-      var th = document.createElement('th');
+      var th;
+      if (i == 0) {
+          th = document.createElement('thead')
+      }
+      else {
+          var th = document.createElement('th');
+      }
       th.appendChild(document.createTextNode(jsondata[0][i]));
       tr0.appendChild(th);
     }
@@ -44,6 +50,7 @@ $(document).ready(function() {
       }
       table.appendChild(tr);
     }
+    $('Table').dynatable();
   };
 
   // TODO: Needs error handling
