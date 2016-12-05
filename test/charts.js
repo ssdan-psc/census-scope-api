@@ -26,31 +26,35 @@ $(document).ready(function() {
 
 
   create_table = function(table, jsondata) {
-    var tr0 = document.createElement('tr');
+    var thead = document.createElement('thead')
     for (var i = 0; i < jsondata[0].length; i++) {
-      var th;
-      if (i == 0) {
-          th = document.createElement('thead')
-      }
-      else {
-          var th = document.createElement('th');
-      }
+      var th = document.createElement('th');
       th.appendChild(document.createTextNode(jsondata[0][i]));
-      tr0.appendChild(th);
+      thead.appendChild(th);
     }
     
-    table.appendChild(tr0);
+    table.appendChild(thead);
 
-    for(var i = 1; i < jsondata.length; i++){
+    var tbody = document.createElement('tbody')
+    for(var i = 1; i < jsondata.length - 1; i++){
       var tr = document.createElement('tr');
       for(var j = 0; j < jsondata[i].length; j++){
         var td = document.createElement('td');
         td.appendChild(document.createTextNode(jsondata[i][j]));
         tr.appendChild(td);
       }
-      table.appendChild(tr);
+      tbody.appendChild(tr);
     }
-    $('Table').dynatable();
+
+    table.appendChild(tbody)
+
+    $('Table').dynatable({table: {headRowSelector: 'thead'}, features: {
+    paginate: false,
+    search: false,
+    recordCount: false,
+    perPageSelect: false
+  }});
+
   };
 
   // TODO: Needs error handling
