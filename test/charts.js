@@ -149,7 +149,17 @@ $(document).ready(function() {
       };
       pyramidChart = new Chart(pyramid_ctx, {
         type: 'horizontalBar', 
-        data: data});
+        data: data,
+       options: {
+    scales: {
+      xAxes: [{
+        stacked: true,
+      }],
+      yAxes: [{
+        stacked: true
+      }]
+    }
+  }});
     }});
   
 
