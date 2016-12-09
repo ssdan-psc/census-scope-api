@@ -1,4 +1,4 @@
-﻿
+
 class Dataset(object):
     def __init__(self, type_name):
         self.type_name = type_name
@@ -162,7 +162,7 @@ def chart_line(labels, datasets):
     Returns a string representing the JSON object for a line chart
     constructed from the datasets provided.
     labels: a list of strings for the x-axis labels on the chart
-    datasets: a list of line_data objects, on for each dataset
+    datasets: a list of line_data objects, one for each dataset
     """
 
     j = '{'
@@ -184,6 +184,43 @@ def chart_line(labels, datasets):
             
     j += "]},"
     j += '"options": { "title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
+
+    return j
+
+def chart_popPyramid(labels, datasets):
+    """
+    Returns a string representing the JSON object for a population pyramid
+    (horizontal histogram) constructed from the datasets provided.
+    labels: a list of strings for the x-axis labels on the chart
+    datasets: a list of stacked_bars objects, one for each dataset
+
+    This function can be called with stacked_bars objects, just like
+    chart_bar().
+    The list of stacked_bars objects passed in as datasets should contain
+    exactly two elements.
+    """
+    #make the first dataset negative in order to display properly
+    for num in datasets[0]:
+        num = num * -1
+
+    j = '{'
+    j += '"type": "HorizontalBar", "data": '
+    j += '{'
+    j += '"labels": '
+    j += str(labels)
+    j += ', "datasets": ['
+    for bars in datasets:
+        j += "{"
+        j += '"label": "'
+        j += bars.label
+        j += '", "data": '
+        j += str(bars.data)
+        j += "}"
+
+        if bars != datasets[-1]:
+            j += ","
+    j += "]},"
+    j += '"options": { "scales": { "xAxes": [{"stacked": true}], "yAxes": [{"stacked": true}] }}}'
 
     return j
 
