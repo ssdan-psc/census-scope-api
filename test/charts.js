@@ -126,41 +126,36 @@ $(document).ready(function() {
     // TODO: Education hard-coded in 
     url: 'http://localhost:5000/pyramid?topic=' + 'population' + '&geo=united%20states',
     success: function(data) {
-      //var full_stacked_json = JSON.parse(data)['chart']
-      //stacked_csv = JSON.parse(data)['csv']
+      var full_pyramid_json = JSON.parse(data)['chart']
+      console.log(full_pyramid_json)
+      stacked_csv = JSON.parse(data)['csv']
 
-      var data = {
-        labels: ["0-4", "5-12", "13-18", "19-24", "25-35", "36-45", "46-55", "56-65", "66+"],
-        datasets: [{
-          label: "Female",
-          backgroundColor: "rgba(255,99,132,0.8)",
-          borderColor: "rgba(255,99,132,1)",
-          hoverBackgroundColor: "rgba(255,99,132,0.5)",
-          hoverBorderColor: "rgba(255,99,132,1)",
-          data: [10, 9, 20, 41, 36, 35, 40, 35, 60],
-        }, {
-          label: "Male",
-          backgroundColor: "rgba(54,162,235,0.8)",
-          borderColor: "rgba(54,162,235,1)",
-          hoverBackgroundColor: "rgba(54,162,235,0.5)",
-          hoverBorderColor: "rgba(54,162,235,1)",
-          data: [-10, -8, -20, -39, -36, -27, -40, -33, -55]
-        }]
-      };
-      pyramidChart = new Chart(pyramid_ctx, {
-        type: 'horizontalBar', 
-        data: data,
-       options: {
-    scales: {
-      xAxes: [{
-        stacked: true,
-      }],
-      yAxes: [{
-        stacked: true
-      }]
-    }
+    //   pyramidChart = new Chart(pyramid_ctx, {
+    //   data: {
+    //     labels: ["10 to 14 years", "15 to 17 years", "18 and 19 years", "20 years", "21 years", "22 to 24 years", "25 to 29 years", "30 to 34 years", "35 to 39 years", "40 to 44 years", "45 to 49 years", "50 to 54 years", "55 to 59 years", "60 and 61 years", "62 to 64 years", "65 and 66 years", "67 to 69 years", "70 to 74 years", "75 to 79 years", "80 to 84 years", "85 years and over"],
+    //     datasets: [{
+    //       data: [10590658, 6482243, 4548783, 2454800, 2385111, 6622417, 10845393, 10457546, 9869846, 10399619, 10740238, 11046847, 9989328, 3639567, 4974429, 2915262, 3616479, 4666294, 3328014, 2362325, 1936823],
+    //       label: "Male"
+    //     }, {
+    //       data: [9767830, 10023099, 10108225, 6162466, 4317042, 2335348, 2271330, 6338466, 10599744, 10407499, 9932588, 10520987, 10985645, 11475456, 10633673, 3920308, 5439455, 3223178, 4077987, 5494784, 4231547, 3442927, 3882341],
+    //       label: "Female"
+    //     }]
+    //   },
+    //   "type": "horizontalBar",
+    //   "options": {
+    //     "scales": {
+    //       "xAxes": [{
+    //         "stacked": true
+    //       }],
+    //       "yAxes": [{
+    //         "stacked": true
+    //       }]
+    //     }
+    //   }
+    // })
+      
+      pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
   }});
-    }});
   
 
   $ ( "chart_form" ).on( "submit" , function( event ) {

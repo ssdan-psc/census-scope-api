@@ -26,8 +26,63 @@ conn = mysql.connect()
 cursor = conn.cursor()
 
 TABLE = 'sample'
-
+    
+# TODO: Change colors?
 colors = ["#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
           "#36A2EB",
           "#FFCE56",
           "#cb62ff",
@@ -92,6 +147,8 @@ def get_pie_chart():
     topic = request.args.get('topic')
     year = request.args.get('year')
 
+    # TODO: Must have year
+
     cols, labels = get_cols(topic, cursor, 'pie')
 
     if cols:
@@ -114,12 +171,8 @@ def get_pie_chart():
             return make_response("There is no data available for %s in %s in %s" % (topic, geo, year), 400)
         
         data = results[0]
-        
-        c = []
-        for i in range(0, len(data)):
-            c.append(colors[i]);
-
-        dataset = json_builder.Pie_Slices(colors, data)
+    
+        dataset = json_builder.Pie_Slices(colors[:len(data)], data)
 
         response = {}
         chart = json_builder.chart_pie(labels, dataset)
@@ -159,10 +212,8 @@ def get_stacked_chart():
         labels = []
         data = []
         temp = []
-        print(results)
         for result in results:
             labels.append(result[0])
-            print(result)
             for i in range(1, len(result)):
                 if result == results[0]:
                     temp.append([result[i]])
@@ -214,7 +265,7 @@ def get_table():
 
             return json.dumps(csv_string.getvalue())
 
-    else:
+    else:   
         return make_response("%s is an invalid topic" % (topic), 400)
 
 # /pyramid?topic=TOPIB&geo=GEO
@@ -224,9 +275,44 @@ def get_pyramid():
     topic = request.args.get('topic')
     geo = request.args.get('geo')
 
-    #cols, labels = get_cols(topic, cursor, "pyramid")
+    cols1, data_labels1 = get_cols(topic, cursor, "pyramid1")
+    cols2, data_labels2 = get_cols(topic, cursor, "pyramid2")
 
-    return json.dumps('hi')
+    # data_labels1 == data_labels2
+
+    if cols1 and cols2:
+        query1 = "SELECT "
+        for col in cols1:
+            query1 += col.decode('utf-8')
+            if col != cols1[-1]:
+                query1 += ","
+        query1 += " FROM " + "popPyramid2014_15" + " WHERE Name = '" + geo + "'"
+
+        cursor.execute(query1)
+        results1 = cursor.fetchall()
+
+        query2 = "SELECT "
+        for col in cols2:
+            query2 += col.decode('utf-8')
+            if col != cols2[-1]:
+                query2 += ","
+        query2 += " FROM " + "popPyramid2014_15" + " WHERE Name = '" + geo + "'"
+
+        cursor.execute(query2)
+        results2 = cursor.fetchall()    
+
+        # TODO: Dataset labels are hardcoded
+        dataset1 = json_builder.Stacked_Bars("Male", colors[0], results1[0])
+        dataset2 = json_builder.Stacked_Bars("Female", colors[1], results2[0])
+
+        labels = [label.encode('utf-8') for label in data_labels1]
+
+        chart = json_builder.chart_popPyramid(labels, [dataset1, dataset2])    # Called with Stacked Bars object
+
+        response = {}
+        response['csv'] = "hi hi hi"    # TODO: Fix csv
+        response["chart"] = json.loads(chart)
+        return json.dumps(response)
 
 
 if __name__ == '__main__':
