@@ -1,4 +1,6 @@
-$(document).ready(function() {
+$(document).ready(function () {
+  //disable tool tips
+  Chart.defaults.global.tooltips.enabled = false;
 
   var param = window.location.search.substring(1).split("=")[0];
   if (param == 'topic'){
