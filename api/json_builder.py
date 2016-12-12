@@ -199,26 +199,38 @@ def chart_popPyramid(labels, datasets):
     The list of stacked_bars objects passed in as datasets should contain
     exactly two elements.
     """
-    #make the first dataset negative in order to display properly
-    for num in datasets[0]:
-        num = num * -1
+    # Make the first dataset negative in order to display properly
+    tmp = list()
+    for num in datasets[0].data:
+        tmp.append(num * -1)
+
+    datasets[0].data = tmp
 
     j = '{'
-    j += '"type": "HorizontalBar", "data": '
+    j += '"type": "horizontalBar", "data": '
     j += '{'
-    j += '"labels": '
-    j += str(labels)
-    j += ', "datasets": ['
+    j += '"labels": ['
+    for label in labels:
+        j += '"' + label + '"'
+        if label != labels[-1]:
+            j += ","
+    j += '], "datasets": ['
+
     for bars in datasets:
         j += "{"
         j += '"label": "'
         j += bars.label
-        j += '", "data": '
-        j += str(bars.data)
-        j += "}"
+        j += '", "data": ['
+
+        for d in bars.data:
+            j += str(d)
+            if d != bars.data[-1]:
+                j += ","
+        j += "]}"
 
         if bars != datasets[-1]:
             j += ","
+
     j += "]},"
     j += '"options": { "scales": { "xAxes": [{"stacked": true}], "yAxes": [{"stacked": true}] }}}'
 
