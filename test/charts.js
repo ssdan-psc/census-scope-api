@@ -24,6 +24,12 @@ $(document).ready(function () {
     var table_csv;
     var pyramid_csv;
 
+    var pyramid_opts = {"options": {"scales": {"xAxes": [{"stacked": true, "ticks": {
+        "callback": function (value, index, values) {
+            return Math.abs(value);
+        }
+    }}], "yAxes": [{"stacked": true}]}, "tooltips": {"callbacks": {"label": function(tooltipItems, data) {return Math.abs(parseInt(tooltipItems.xLabel))}}}}};
+
     create_table = function(table, jsondata) {
         var thead = document.createElement('thead');
         for (var i = 0; i < jsondata[0].length; i++) {
@@ -128,12 +134,11 @@ $(document).ready(function () {
         // TODO: Education hard-coded in
         url: 'http://localhost:5000/pyramid?topic=' + 'population' + '&geo=united%20states',
         success: function(data) {
-            var full_pyramid_json = JSON.parse(data)['chart'];
+
+            var partial_json = JSON.parse(data)['chart'];
+            var full_pyramid_json = $.extend({}, partial_json, pyramid_opts);
+            console.log(full_pyramid_json);
             pyramid_csv = JSON.parse(data)['csv'];
-
-            //TODO: Only on Pyramid disable tool tips
-            Chart.defaults.global.tooltips.enabled = false;
-
             pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
         }});
 
@@ -150,9 +155,10 @@ $(document).ready(function () {
 
         var hiddenElement = document.createElement('a');
         hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(csv);
-        hiddenElement.download = 'data.csv';  // TODO: Change Name - get topic - topic_chart.csv
+        hiddenElement.download = topic + '_' + chartVariable + '.csv';
         hiddenElement.click();
     };
+
 
     download_img = function (chartVariable) {
 
@@ -169,11 +175,10 @@ $(document).ready(function () {
         var hiddenElement = document.createElement('a');
         hiddenElement.target = '_blank';
         hiddenElement.href = img;
-        console.log(hiddenElement.href);
-        hiddenElement.download = 'img.png'; // TODO: Change Name - get topic - topic_chart.png
-        console.log(hiddenElement.download);
+        hiddenElement.download = topic + '_' + chartVariable +'.png';
         hiddenElement.click();
     };
+
 
     $( "#chart_form" ).on( "submit" , function( event ) {
         event.preventDefault();
@@ -235,14 +240,13 @@ $(document).ready(function () {
                 table_list.push(line)
             }
             create_table(table, table_list);
-            table.process();
 
             // Pyramid
-            var full_pyramid_json = JSON.parse(pyramid_resp[0])['chart'];
-            pyramid_csv = JSON.parse(stacked_resp[0])['csv'];
+            var partial_json = JSON.parse(pyramid_resp[0])['chart'];
+            var full_pyramid_json = $.extend({}, partial_json, pyramid_opts);
+            pyramid_csv = JSON.parse(pyramid_resp[0])['csv'];
             pyramidChart.destroy();
-            pyramidChart = new Chart(pyramid_ctx, full_pyramid_json);
+            pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
         });
     });
 });
-

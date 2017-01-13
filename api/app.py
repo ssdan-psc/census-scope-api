@@ -183,7 +183,6 @@ def get_pie_chart():
         for row in results:
              csv1 += ', '.join(str(x) for x in row) + '\n'
 
-        print(csv1)
         response["csv"] = csv1
         return json.dumps(response)
 
@@ -314,7 +313,6 @@ def get_pyramid():
         dataset1 = json_builder.Stacked_Bars("Male", colors[0], results1[0][::-1])
         dataset2 = json_builder.Stacked_Bars("Female", colors[1], results2[0][::-1])
 
-        print(dataset1.data)
 
         labels = [label.encode('utf-8') for label in data_labels1][::-1]
 
