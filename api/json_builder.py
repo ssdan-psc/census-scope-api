@@ -183,7 +183,6 @@ def chart_line(labels, datasets):
 
     j += "]},"
     j += '"options": {"title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
-    print(j)
     return j
 
 def chart_popPyramid(labels, datasets):
@@ -231,12 +230,7 @@ def chart_popPyramid(labels, datasets):
         if bars != datasets[-1]:
             j += ","
 
-    j += "]},"
-    j += '"options": { "scales": { "xAxes": [{"stacked": true}],'
-    # j += '"ticks": { "callback": "function(value, index, values) {return Math.abs(value);}"}}], '
-    j += '"yAxes": [{"stacked": true}]}}}'
-
-    print(j)
+    j += "]}}"
     return j
 
 
