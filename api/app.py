@@ -122,10 +122,8 @@ def get_trend_chart():
             data.append(result[1])
       
         response = {}
-        chart = json_builder.chart_line(labels, [json_builder.Line_Data(data, data_labels[1])])
-        print(chart)
+        chart = json_builder.chart_line(labels, [json_builder.Line_Data(data, data_labels[1], colors[0])])
         response["chart"] = json.loads(chart)
-
         with io.BytesIO() as csv_string:
             writer = csv.writer(csv_string)
             writer.writerow(data_labels)

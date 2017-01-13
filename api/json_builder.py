@@ -44,10 +44,11 @@ class Line_Data(Dataset):
         label: a string for the name of the data set
         data: list of numerical values for each point on the line
     """
-    def __init__(self, data, label):
+    def __init__(self, data, label, color):
         super(Line_Data, self).__init__("line")
         self.label = label
         self.data = data
+        self.color = color
 
 
 def chart_pie(labels, dataset):
@@ -171,7 +172,9 @@ def chart_line(labels, datasets):
         j += "{"
         j += '"label": \"'
         j += lines.label
-        j += '\", "fill": false, "data": '
+        j += '\", "backgroundColor":"' + lines.color + '"'
+        j += ', "borderColor":"' + lines.color + '"'
+        j += ', "fill": false, "data": '
         j += str(lines.data)
         j += "}"
 
@@ -180,7 +183,7 @@ def chart_line(labels, datasets):
 
     j += "]},"
     j += '"options": {"title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
-
+    print(j)
     return j
 
 def chart_popPyramid(labels, datasets):

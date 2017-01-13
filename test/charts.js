@@ -100,6 +100,7 @@ $(document).ready(function () {
         }
     });
 
+
     // TODO: Error handling
     // Default Table
     $.ajax({
@@ -109,7 +110,7 @@ $(document).ready(function () {
         url: 'http://localhost:5000/table?topic=' + 'population' + '&geo=united%20states',
         success: function(data) {
             table_csv  = JSON.parse(data);
-            table_list = []
+            table_list = [];
             lines = table_csv.split('\r\n');
             for (var i = 0; i < lines.length; i++) {
                 line = lines[i].split(',');
@@ -139,7 +140,7 @@ $(document).ready(function () {
     download_csv = function(chartVariable) {
         var csv;
 
-        if (chartVariable == "pie") {
+        if (chartVariable == 'pie') {
             csv = pie_csv
         } else if (chartVariable == 'trend') {
             csv = trend_csv
@@ -154,9 +155,10 @@ $(document).ready(function () {
     };
 
     download_img = function (chartVariable) {
+
         var img;
 
-        if (chartVariable == "pie") {
+        if (chartVariable == 'pie') {
             img = pieChart.toBase64Image();
         } else if (chartVariable == 'trend') {
             img = lineChart.toBase64Image();
@@ -164,10 +166,12 @@ $(document).ready(function () {
             img = barChart.toBase64Image();
         }
 
-        var hiddenElement = document.createElement('download');
+        var hiddenElement = document.createElement('a');
         hiddenElement.target = '_blank';
         hiddenElement.href = img;
+        console.log(hiddenElement.href);
         hiddenElement.download = 'img.png'; // TODO: Change Name - get topic - topic_chart.png
+        console.log(hiddenElement.download);
         hiddenElement.click();
     };
 
@@ -219,6 +223,10 @@ $(document).ready(function () {
 
             // TODO: Table isn't destroyed
             // Table
+            while (table.hasChildNodes()) {
+                table.removeChild(table.lastChild);
+            }
+
             table_csv  = JSON.parse(tbl_resp[0]);
             table_list = [];
             lines = table_csv.split('\r\n');
@@ -227,6 +235,7 @@ $(document).ready(function () {
                 table_list.push(line)
             }
             create_table(table, table_list);
+            table.process();
 
             // Pyramid
             var full_pyramid_json = JSON.parse(pyramid_resp[0])['chart'];
