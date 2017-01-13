@@ -123,6 +123,7 @@ def get_trend_chart():
       
         response = {}
         chart = json_builder.chart_line(labels, [json_builder.Line_Data(data, data_labels[1])])
+        print(chart)
         response["chart"] = json.loads(chart)
 
         with io.BytesIO() as csv_string:
@@ -132,6 +133,7 @@ def get_trend_chart():
                 writer.writerow(row)
 
             response["csv"] = csv_string.getvalue()
+
 
         return json.dumps(response)
 
@@ -177,15 +179,14 @@ def get_pie_chart():
         response = {}
         chart = json_builder.chart_pie(labels, dataset)
         response['chart'] = json.loads(chart)
-       
-        with io.BytesIO() as csv_string:
-            writer = csv.writer(csv_string)
-            writer.writerow(labels)
-            for row in results: 
-                writer.writerow(row)
 
-            response["csv"] = csv_string.getvalue()
+        csv1 = ''
+        csv1 += ','.join(labels) + '\n'
+        for row in results:
+             csv1 += ', '.join(str(x) for x in row) + '\n'
 
+        print(csv1)
+        response["csv"] = csv1
         return json.dumps(response)
 
     else:
@@ -199,7 +200,7 @@ def get_stacked_chart():
     topic = request.args.get('topic')       
 
     cols, data_labels = get_cols(topic, cursor, 'stacked_bar')
-    
+
     if cols:
         query = "SELECT Year"
         for col in cols: 
@@ -224,11 +225,21 @@ def get_stacked_chart():
             dataset = json_builder.Stacked_Bars(data_labels[i], colors[i], temp[i])
 
             data.append(dataset)
-        
+
+        csv = ''
+        csv += 'Year,' + ','.join(cols) + '\n'
+        for i in range(0, len(labels)):
+            csv += str(labels[i]) + ',' # Year
+            for j in range(0, len(temp)):
+                csv += str(temp[j][i])
+                if j != len(temp) - 1:
+                    csv += ','
+            csv += '\n'
+
         response = {}
         chart = json_builder.chart_bar(labels, data)
         response["chart"] = json.loads(chart)
-        response['csv'] = "test,test,test"      # TODO: Need csv
+        response['csv'] = csv
 
         return json.dumps(response)
 
@@ -278,7 +289,7 @@ def get_pyramid():
     cols1, data_labels1 = get_cols(topic, cursor, "pyramid1")
     cols2, data_labels2 = get_cols(topic, cursor, "pyramid2")
 
-    # data_labels1 == data_labels2
+    # TODO: Verify data_labels1 == data_labels2
 
     if cols1 and cols2:
         query1 = "SELECT "
@@ -301,16 +312,23 @@ def get_pyramid():
         cursor.execute(query2)
         results2 = cursor.fetchall()    
 
-        # TODO: Dataset labels are hardcoded
-        dataset1 = json_builder.Stacked_Bars("Male", colors[0], results1[0])
-        dataset2 = json_builder.Stacked_Bars("Female", colors[1], results2[0])
+        # Male & Female labels are hardcoded
+        dataset1 = json_builder.Stacked_Bars("Male", colors[0], results1[0][::-1])
+        dataset2 = json_builder.Stacked_Bars("Female", colors[1], results2[0][::-1])
 
-        labels = [label.encode('utf-8') for label in data_labels1]
+        print(dataset1.data)
+
+        labels = [label.encode('utf-8') for label in data_labels1][::-1]
 
         chart = json_builder.chart_popPyramid(labels, [dataset1, dataset2])    # Called with Stacked Bars object
 
+        csv = ''
+        csv += 'Sex, ' + ','.join(data_labels1) + '\\n'
+        csv += 'Male, ' + ', '.join(str(x) for x in results1[0]) + '\n'
+        csv += 'Female, ' + ', '.join(str(x) for x in results2[0]) + '\n'
+
         response = {}
-        response['csv'] = "hi hi hi"    # TODO: Fix csv
+        response['csv'] = csv
         response["chart"] = json.loads(chart)
         return json.dumps(response)
 
