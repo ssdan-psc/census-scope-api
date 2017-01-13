@@ -276,6 +276,7 @@ def get_table():
     else:   
         return make_response("%s is an invalid topic" % (topic), 400)
 
+
 # /pyramid?topic=TOPIB&geo=GEO
 @app.route('/pyramid', methods=['GET'])
 @cross_origin()
@@ -327,6 +328,8 @@ def get_pyramid():
         response['csv'] = csv
         response["chart"] = json.loads(chart)
         return json.dumps(response)
+    else:
+        return make_response("%s is an invalid topic" % (topic), 400)
 
 
 if __name__ == '__main__':
