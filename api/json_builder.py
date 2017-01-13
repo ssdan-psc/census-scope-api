@@ -85,10 +85,9 @@ def chart_pie(labels, dataset):
     j += '"backgroundColor": ['
 
     for color in dataset.colors:
-        # j += "\"rgba"
         j += '"'
         j += str(color)
-        
+
         if color != dataset.colors[-1]:
             j += "\","
         else:
@@ -98,10 +97,9 @@ def chart_pie(labels, dataset):
     j += '"hoverBackgroundColor": ['
 
     for color in dataset.colors:
-     # j += "\"rgba"
         j += '"'
         j += str(color)
-        
+
         if color != dataset.colors[-1]:
             j += "\","
         else:
@@ -109,11 +107,9 @@ def chart_pie(labels, dataset):
 
     j += "]}"
     j += "]},"
-    j += '"options": { "animation": { "duration": 1000, "animateRotate": false,'
+    j += '"options": {"animation": { "duration": 1000, "animateRotate": false,'
     j += '"animateScale": true}'
     j += '} }'
-
-
     return j
 
 def chart_bar(labels, datasets):
@@ -138,7 +134,7 @@ def chart_bar(labels, datasets):
         j += str(bars.label)
         j += '\", "backgroundColor":"' + bars.color + '"'
         j += ', "data": ['
-        
+
         for d in bars.data:
             j += str(d)
 
@@ -175,15 +171,15 @@ def chart_line(labels, datasets):
         j += "{"
         j += '"label": \"'
         j += lines.label
-        j += '\", "data": '
+        j += '\", "fill": false, "data": '
         j += str(lines.data)
         j += "}"
 
         if lines != datasets[-1]:
             j += ","
-            
+
     j += "]},"
-    j += '"options": { "title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
+    j += '"options": {"title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
 
     return j
 
@@ -220,7 +216,8 @@ def chart_popPyramid(labels, datasets):
         j += "{"
         j += '"label": "'
         j += bars.label
-        j += '", "data": ['
+        j += '\", "backgroundColor":"' + bars.color + '"'
+        j += ', "data": ['
 
         for d in bars.data:
             j += str(d)
@@ -232,8 +229,11 @@ def chart_popPyramid(labels, datasets):
             j += ","
 
     j += "]},"
-    j += '"options": { "scales": { "xAxes": [{"stacked": true}], "yAxes": [{"stacked": true}] }}}'
+    j += '"options": { "scales": { "xAxes": [{"stacked": true}],'
+    # j += '"ticks": { "callback": "function(value, index, values) {return Math.abs(value);}"}}], '
+    j += '"yAxes": [{"stacked": true}]}}}'
 
+    print(j)
     return j
 
 
