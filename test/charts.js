@@ -63,7 +63,7 @@ $(document).ready(function () {
 
     };
 
-    // TODO: Needs error handling
+
     // Default Pie Chart
     $.ajax({
         async: false,
@@ -73,47 +73,53 @@ $(document).ready(function () {
             var full_pie_json = JSON.parse(data)['chart'];
             pie_csv = JSON.parse(data)['csv'];
             pieChart = new Chart(pie_ctx, full_pie_json);
+        },
+        error: function(xhr, status, error) {
+            pie_ctx.getContext('2d').font="20px Helvetica";
+            pie_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
 
 
-    // TODO: Needs error handling
     // Default Trend Chart
     $.ajax({
         async: false,
         type: 'GET',
-        // TODO: Population hard-coded in
-        url: 'http://localhost:5000/trend?topic=' + 'population' + '&geo=united%20states',
+        url: 'http://localhost:5000/trend?topic=' + topic + '&geo=united%20states',
         success: function(data) {
             var full_line_json = JSON.parse(data)['chart'];
             trend_csv = JSON.parse(data)['csv'];
             lineChart = new Chart(line_ctx, full_line_json);
+        },
+        error: function(xhr, status, error) {
+            line_ctx.getContext('2d').font="20px Helvetica";
+            line_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
 
 
-    // TODO: Error handling
     // Default Stacked Bar Chart
     $.ajax({
         async: false,
         type: 'GET',
-        // TODO: Education hard-coded in
-        url: 'http://localhost:5000/stacked?topic=' + 'education' + '&geo=united%20states',
+        url: 'http://localhost:5000/stacked?topic=' + topic + '&geo=united%20states',
         success: function(data) {
             var full_stacked_json = JSON.parse(data)['chart'];
             stacked_csv = JSON.parse(data)['csv'];
             barChart = new Chart(bar_ctx, full_stacked_json);
+        },
+        error: function(xhr, status, error) {
+            bar_ctx.getContext('2d').font="20px Helvetica";
+            bar_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
 
 
-    // TODO: Error handling
     // Default Table
     $.ajax({
         async: false,
         type: 'GET',
-        // TODO: Population hard-coded in
-        url: 'http://localhost:5000/table?topic=' + 'population' + '&geo=united%20states',
+        url: 'http://localhost:5000/table?topic=' + topic + '&geo=united%20states',
         success: function(data) {
             table_csv  = JSON.parse(data);
             table_list = [];
@@ -123,24 +129,31 @@ $(document).ready(function () {
                 table_list.push(line)
             }
             create_table(table, table_list)
+        },
+        error: function(xhr, status, error) {
+            table.innerHTML = xhr.status + ' Error: ' + xhr.responseText;
+            console.log(xhr);
         }
     });
 
-    // TODO: Error handling
+
     // Default Pyramid Chart
     $.ajax({
         async: false,
         type: 'GET',
-        // TODO: Education hard-coded in
-        url: 'http://localhost:5000/pyramid?topic=' + 'population' + '&geo=united%20states',
+        url: 'http://localhost:5000/pyramid?topic=' + topic + '&geo=united%20states',
         success: function(data) {
 
             var partial_json = JSON.parse(data)['chart'];
             var full_pyramid_json = $.extend({}, partial_json, pyramid_opts);
-            console.log(full_pyramid_json);
             pyramid_csv = JSON.parse(data)['csv'];
             pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
-        }});
+        },
+        error: function(xhr, status, error) {
+            pyramid_ctx.getContext('2d').font="20px Helvetica";
+            pyramid_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
+        }
+    });
 
     download_csv = function(chartVariable) {
         var csv;
@@ -151,6 +164,8 @@ $(document).ready(function () {
             csv = trend_csv
         } else if (chartVariable == 'stacked') {
             csv = stacked_csv
+        } else if (chartVariable == 'pyramid') {
+            csv = pyramid_csv
         }
 
         var hiddenElement = document.createElement('a');
@@ -205,6 +220,7 @@ $(document).ready(function () {
         url = 'http://localhost:5000/pyramid?topic=' + 'population' + '&geo=' + geo;
         var pyramid = $.get(url);
 
+        // TODO: Error handling
         // [data, textStatus, jqXHR]
         $.when(pie, trend, stacked, tbl, pyramid).done(function(pie_resp, trend_resp, stacked_resp, tbl_resp, pyramid_resp) {
 
