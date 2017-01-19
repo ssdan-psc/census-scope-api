@@ -1,10 +1,10 @@
-$(document).ready(function () {
+$(document).ready(function() {
 
     var param = window.location.search.substring(1).split("=")[0];
-    if (param == 'topic'){
+    if (param == 'topic') {
         var topic = window.location.search.substring(1).split("=")[1];
     } else {
-        console.log("Need topic");  // TODO: Change error message & handling
+        console.log("Need topic"); // TODO: Change error message & handling
     }
 
     var pieChart;
@@ -24,11 +24,30 @@ $(document).ready(function () {
     var table_csv;
     var pyramid_csv;
 
-    var pyramid_opts = {"options": {"scales": {"xAxes": [{"stacked": true, "ticks": {
-        "callback": function (value, index, values) {
-            return Math.abs(value);
+    var pyramid_opts = {
+        "options": {
+            "scales": {
+                "xAxes": [{
+                    "stacked": true,
+                    "ticks": {
+                        "callback": function(value, index, values) {
+                            return Math.abs(value);
+                        }
+                    }
+                }],
+                "yAxes": [{
+                    "stacked": true
+                }]
+            },
+            "tooltips": {
+                "callbacks": {
+                    "label": function(tooltipItems, data) {
+                        return Math.abs(parseInt(tooltipItems.xLabel))
+                    }
+                }
+            }
         }
-    }}], "yAxes": [{"stacked": true}]}, "tooltips": {"callbacks": {"label": function(tooltipItems, data) {return Math.abs(parseInt(tooltipItems.xLabel))}}}}};
+    };
 
     create_table = function(table, jsondata) {
         var thead = document.createElement('thead');
@@ -41,9 +60,9 @@ $(document).ready(function () {
         table.appendChild(thead);
 
         var tbody = document.createElement('tbody');
-        for(var i = 1; i < jsondata.length - 1; i++){
+        for (var i = 1; i < jsondata.length - 1; i++) {
             var tr = document.createElement('tr');
-            for(var j = 0; j < jsondata[i].length; j++){
+            for (var j = 0; j < jsondata[i].length; j++) {
                 var td = document.createElement('td');
                 td.appendChild(document.createTextNode(jsondata[i][j]));
                 tr.appendChild(td);
@@ -53,13 +72,18 @@ $(document).ready(function () {
 
         table.appendChild(tbody);
 
-        $('Table').dynatable({table: {headRowSelector: 'thead'}, features: {
-            paginate: false,
-            search: false,
-            recordCount: false,
-            perPageSelect: false,
-            pushState: false
-        }});
+        $('Table').dynatable({
+            table: {
+                headRowSelector: 'thead'
+            },
+            features: {
+                paginate: false,
+                search: false,
+                recordCount: false,
+                perPageSelect: false,
+                pushState: false
+            }
+        });
 
     };
 
@@ -75,7 +99,7 @@ $(document).ready(function () {
             pieChart = new Chart(pie_ctx, full_pie_json);
         },
         error: function(xhr, status, error) {
-            pie_ctx.getContext('2d').font="20px Helvetica";
+            pie_ctx.getContext('2d').font = "20px Helvetica";
             pie_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
@@ -92,7 +116,7 @@ $(document).ready(function () {
             lineChart = new Chart(line_ctx, full_line_json);
         },
         error: function(xhr, status, error) {
-            line_ctx.getContext('2d').font="20px Helvetica";
+            line_ctx.getContext('2d').font = "20px Helvetica";
             line_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
@@ -109,7 +133,7 @@ $(document).ready(function () {
             barChart = new Chart(bar_ctx, full_stacked_json);
         },
         error: function(xhr, status, error) {
-            bar_ctx.getContext('2d').font="20px Helvetica";
+            bar_ctx.getContext('2d').font = "20px Helvetica";
             bar_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
@@ -121,7 +145,7 @@ $(document).ready(function () {
         type: 'GET',
         url: 'http://localhost:5000/table?topic=' + topic + '&geo=united%20states',
         success: function(data) {
-            table_csv  = JSON.parse(data);
+            table_csv = JSON.parse(data);
             table_list = [];
             lines = table_csv.split('\r\n');
             for (var i = 0; i < lines.length; i++) {
@@ -150,7 +174,7 @@ $(document).ready(function () {
             pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
         },
         error: function(xhr, status, error) {
-            pyramid_ctx.getContext('2d').font="20px Helvetica";
+            pyramid_ctx.getContext('2d').font = "20px Helvetica";
             pyramid_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
         }
     });
@@ -175,7 +199,7 @@ $(document).ready(function () {
     };
 
 
-    download_img = function (chartVariable) {
+    download_img = function(chartVariable) {
 
         var img;
 
@@ -190,12 +214,12 @@ $(document).ready(function () {
         var hiddenElement = document.createElement('a');
         hiddenElement.target = '_blank';
         hiddenElement.href = img;
-        hiddenElement.download = topic + '_' + chartVariable +'.png';
+        hiddenElement.download = topic + '_' + chartVariable + '.png';
         hiddenElement.click();
     };
 
 
-    $( "#chart_form" ).on( "submit" , function( event ) {
+    $("#chart_form").on("submit", function(event) {
         event.preventDefault();
 
         var geo = $('#geo').val();
@@ -207,15 +231,15 @@ $(document).ready(function () {
 
         // Trend
         url = 'http://localhost:5000/trend?topic=' + 'population' + '&geo=' + geo;
-        var trend =  $.get(url);
+        var trend = $.get(url);
 
         // Stacked Bar
         url = 'http://localhost:5000/stacked?topic=' + topic + '&geo=' + geo;
-        var stacked =  $.get(url);
+        var stacked = $.get(url);
 
         // Table
         url = 'http://localhost:5000/table?topic=' + 'population' + '&geo=' + geo;
-        var tbl =  $.get(url);
+        var tbl = $.get(url);
 
         url = 'http://localhost:5000/pyramid?topic=' + 'population' + '&geo=' + geo;
         var pyramid = $.get(url);
@@ -248,7 +272,7 @@ $(document).ready(function () {
                 table.removeChild(table.lastChild);
             }
 
-            table_csv  = JSON.parse(tbl_resp[0]);
+            table_csv = JSON.parse(tbl_resp[0]);
             table_list = [];
             lines = table_csv.split('\r\n');
             for (var i = 0; i < lines.length; i++) {
