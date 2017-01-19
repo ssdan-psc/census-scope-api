@@ -2,11 +2,11 @@
 with 'mysql -h localhost -u root --local-infile'
 */
 
-CREATE DATABASE IF NOT EXISTS census_scope; 
+CREATE DATABASE IF NOT EXISTS censcope; 
 
-DROP TABLE IF EXISTS census_scope.sample;
+DROP TABLE IF EXISTS censcope.sample;
 
-CREATE TABLE IF NOT EXISTS census_scope.sample ( 
+CREATE TABLE IF NOT EXISTS censcope.sample ( 
 	GeographicIdentifier VARCHAR(20),
 	SummaryLevel INT,
 	AreaName VARCHAR(100),
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS census_scope.sample (
 	HHInc20Percentile INT
 );
 
-LOAD DATA LOCAL INFILE 'ACS10_15_SSDAN_MainMeasures.csv' INTO TABLE census_scope.sample 
+LOAD DATA LOCAL INFILE 'ACS10_15_SSDAN_MainMeasures.csv' INTO TABLE censcope.sample 
 FIELDS TERMINATED BY ',' ENCLOSED BY '"';
 
 
