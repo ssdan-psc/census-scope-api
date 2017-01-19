@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS census_scope.popPyramid2014_15;
+DROP TABLE IF EXISTS censcope.popPyramid2014_15;
 
-CREATE TABLE IF NOT EXISTS census_scope.popPyramid2014_15 ( 
+CREATE TABLE IF NOT EXISTS censcope.popPyramid2014_15 ( 
 	STUSAB VARCHAR(2),
 	SUMLEVEL VARCHAR(3),
 	GEOID VARCHAR(20),
@@ -56,5 +56,5 @@ CREATE TABLE IF NOT EXISTS census_scope.popPyramid2014_15 (
 	B01001e49 INT
 );
 
-LOAD DATA LOCAL INFILE 'popPyramid2014_5_data.csv' INTO TABLE census_scope.popPyramid2014_15
+LOAD DATA LOCAL INFILE 'popPyramid2014_5_data.csv' INTO TABLE censcope.popPyramid2014_15
 FIELDS TERMINATED BY ',' ENCLOSED BY '"';
