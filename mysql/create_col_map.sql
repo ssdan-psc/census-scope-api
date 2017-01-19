@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS census_scope.col_map;
+DROP TABLE IF EXISTS censcope.col_map;
 
-CREATE TABLE IF NOT EXISTS census_scope.col_map ( 
+CREATE TABLE IF NOT EXISTS censcope.col_map ( 
 	col VARCHAR(20) DEFAULT NULL,
 	topic VARCHAR(20) DEFAULT NULL,
 	label VARCHAR(100) DEFAULT NULL,
