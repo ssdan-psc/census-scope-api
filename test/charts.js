@@ -87,7 +87,6 @@ $(document).ready(function() {
 
     };
 
-
     // Default Pie Chart
     $.ajax({
         async: false,
@@ -109,7 +108,7 @@ $(document).ready(function() {
     $.ajax({
         async: false,
         type: 'GET',
-        url: 'http://localhost:5000/trend?topic=' + topic + '&geo=united%20states',
+        url: 'http://localhost:5000/trend?topic=' + 'population' + '&geo=united%20states',
         success: function(data) {
             var full_line_json = JSON.parse(data)['chart'];
             trend_csv = JSON.parse(data)['csv'];
@@ -143,7 +142,7 @@ $(document).ready(function() {
     $.ajax({
         async: false,
         type: 'GET',
-        url: 'http://localhost:5000/table?topic=' + topic + '&geo=united%20states',
+        url: 'http://localhost:5000/table?topic=' + 'population' + '&geo=united%20states',
         success: function(data) {
             table_csv = JSON.parse(data);
             table_list = [];
@@ -165,7 +164,7 @@ $(document).ready(function() {
     $.ajax({
         async: false,
         type: 'GET',
-        url: 'http://localhost:5000/pyramid?topic=' + topic + '&geo=united%20states',
+        url: 'http://localhost:5000/pyramid?topic=' + 'population' + '&geo=united%20states',
         success: function(data) {
 
             var partial_json = JSON.parse(data)['chart'];
@@ -226,7 +225,7 @@ $(document).ready(function() {
         var year = $('#year').val();
 
         // Pie
-        var url = 'http://localhost:5000/pie?topic=' + topic + '&geo=' + geo + '&year=' + year;
+        var url = 'http://localhost:5000/pie?topic=' + 'education' + '&geo=' + geo + '&year=' + year;
         var pie = $.get(url);
 
         // Trend
@@ -234,7 +233,7 @@ $(document).ready(function() {
         var trend = $.get(url);
 
         // Stacked Bar
-        url = 'http://localhost:5000/stacked?topic=' + topic + '&geo=' + geo;
+        url = 'http://localhost:5000/stacked?topic=' + 'education' + '&geo=' + geo;
         var stacked = $.get(url);
 
         // Table
@@ -251,42 +250,82 @@ $(document).ready(function() {
             // Pie
             var full_pie_json = JSON.parse(pie_resp[0])['chart'];
             pie_csv = JSON.parse(pie_resp[0])['csv'];
-            pieChart.destroy();
-            pieChart = new Chart(pie_ctx, full_pie_json);
+            try { 
+                pieChart.destroy(); 
+            } finally {
+                pieChart = new Chart(pie_ctx, full_pie_json);
+            }
 
             // Trend
             var full_line_json = JSON.parse(trend_resp[0])['chart'];
             trend_csv = JSON.parse(trend_resp[0])['csv'];
-            lineChart.destroy();
-            lineChart = new Chart(line_ctx, full_line_json);
+            try { 
+                lineChart.destroy(); 
+            } finally {
+                lineChart = new Chart(line_ctx, full_line_json);
+            }
 
             // Stacked
             var full_stacked_json = JSON.parse(stacked_resp[0])['chart'];
             stacked_csv = JSON.parse(stacked_resp[0])['csv'];
-            barChart.destroy();
-            barChart = new Chart(bar_ctx, full_stacked_json);
-
-            // TODO: Table isn't destroyed
-            // Table
-            while (table.hasChildNodes()) {
-                table.removeChild(table.lastChild);
+            try { 
+                barChart.destroy(); 
+            } finally { 
+                barChart = new Chart(bar_ctx, full_stacked_json);
             }
 
-            table_csv = JSON.parse(tbl_resp[0]);
-            table_list = [];
-            lines = table_csv.split('\r\n');
-            for (var i = 0; i < lines.length; i++) {
-                line = lines[i].split(',');
-                table_list.push(line)
-            }
-            create_table(table, table_list);
+            // Table 
+            convert_camelcase = function(str) {
+                str = str.replace('"','')
+                if (str.length == 1) {
+                    return str.toLowerCase();
+                } else {
+                    //From http://stackoverflow.com/questions/2970525/converting-any-string-into-camel-case
+                    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+                        if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+                            return index == 0 ? match.toLowerCase() : match.toUpperCase();
+                        });
+                }
+            };
+
+            update_dynatable = function(table, newData) {
+
+                var dynatable = $(table).data('dynatable');
+                var recordCount = dynatable.settings.dataset.originalRecords.length;
+                
+                //remove all existing records from this table
+                for (i = 0; i < recordCount; i++) {
+                    dynatable.settings.dataset.originalRecords.pop();
+                }
+
+                var lines = newData.split("\\r\\n");
+                lines.pop();
+                var cols = lines[0].split(",");
+              
+                for (i = 1; i < lines.length; i++) {
+                    var newRecord = {}
+                    var entries = lines[i].split(",")
+                    for (j = 0; j < entries.length; j++) {
+                        var colCamel = convert_camelcase(cols[j]);
+                        newRecord[colCamel] = entries[j];
+                    }
+                    dynatable.settings.dataset.originalRecords.push(newRecord)
+                }
+                
+                dynatable.process();
+            };
+
+            update_dynatable(table, tbl_resp[0])
 
             // Pyramid
             var partial_json = JSON.parse(pyramid_resp[0])['chart'];
             var full_pyramid_json = $.extend({}, partial_json, pyramid_opts);
             pyramid_csv = JSON.parse(pyramid_resp[0])['csv'];
-            pyramidChart.destroy();
-            pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
+            try { 
+                pyramidChart.destroy();
+            } finally  {
+                pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
+            }
         });
     });
 });
