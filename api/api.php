@@ -18,17 +18,17 @@
 
 */
 
+$colors = 
 function get_cols($topic, $chart, $conn) {
-    $query = "SELECT col, label FROM col_map WHERE topic=" . "'" . $topic . "' AND " . $chart . "= 1"
+    $query = "SELECT col, label FROM col_map WHERE topic=" . "'" . $topic . "' AND " . $chart . "=1";
 
-    $cols = array();
-    $labels = array();
+    $cols = array();    // cols = [[col0, label0], [col1, label1], ... , [coln, labeln]]
 
-    foreach ($conn->query($sql) as $row) {
-    	array_push($cols, $row['col'])
-        array_push($labels, $row['label'])
+    foreach ($conn->query($query) as $row) {
+    	array_push($cols, ['col' => $row['col'], 'label' => $row['label']]);
     }
-    return $cols, $labels
+
+    return $cols;
 }
 
 // --- Step 1: Initialize variables and functions
@@ -115,9 +115,10 @@ $response['data'] = NULL;
 $servername = "127.0.0.1";
 $username = "root";
 $password = "";
+$table = 'sample';
 
 try {
-    $conn = new PDO("mysql:host=127.0.0.1;port=3307;dbname=censcope", $username, $password);
+    $conn = new PDO("mysql:host=127.0.0.1;port=3307;dbname=census_scope", $username, $password);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     // echo "Connected successfully";
@@ -130,14 +131,64 @@ try {
 
 // Process Request
 
-// Method A: Say Hello to the API
+// API 
 if(strcasecmp($_GET['method'],'hello') == 0){
+
+	$topic = $_GET['topic'];
 	$geo = $_GET['geo'];
 	$year = $_GET['year'];
 
 	$response['code'] = 1;
-	$response['status'] = $api_response_code[ $response['code'] ]['HTTP Response'];
-	$response['data'] = $geo . ' ' . $year;
+	$response['status'] = $api_response_code[$response['code'] ]['HTTP Response'];
+
+	$data = array();
+	// Pie
+
+	// Trend
+	$cols = get_cols($topic, 'trend', $conn);
+	if (count($cols) > 0) {
+		$data_labels = array("Year");
+		$query = "SELECT Year";
+		foreach ($cols as $col) {
+			$query .=  "," . $col['col'];
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+
+		$labels = array();
+		$data = array();
+
+		foreach ($conn->query($query) as $row) {
+			array_push($labels, $row[0]);
+			array_push($data, $row[1]);
+		}
+
+		print_r($labels);
+		print_r($data);
+
+		$data['trend'] = ["csv" => "csv",
+						  "chart" => "chart" ];
+		exit;
+	 } 
+	 else { 
+	 	echo 'not cols';
+	 	exit;
+	 }
+
+	// Stacked
+	// $data['stacked'] = ["csv" =>,
+	// 				    "chart" => ]
+
+	// // Table
+	// $data['trend'] = ["csv" =>]
+
+	// // Pyramid
+	// $data['pyramid'] = ["csv" =>,
+	// 				    "chart" => ]
+
+	
+	$response['data'] = $data;
 }
 
 // --- Step 4: Deliver Response
