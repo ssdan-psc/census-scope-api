@@ -225,7 +225,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 
-		var_dump($csv); 
+		echo $csv; 
 		exit; 
 
 		$data['trend'] = ["csv" => "csv",
