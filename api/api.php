@@ -18,18 +18,69 @@
 
 */
 
-$colors = 
-function get_cols($topic, $chart, $conn) {
-    $query = "SELECT col, label FROM col_map WHERE topic=" . "'" . $topic . "' AND " . $chart . "=1";
+include 'build_json.php';
 
-    $cols = array();    // cols = [[col0, label0], [col1, label1], ... , [coln, labeln]]
+$colors = array("#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362");
 
-    foreach ($conn->query($query) as $row) {
-    	array_push($cols, ['col' => $row['col'], 'label' => $row['label']]);
-    }
-
-    return $cols;
-}
 
 // --- Step 1: Initialize variables and functions
 
@@ -121,8 +172,6 @@ try {
     $conn = new PDO("mysql:host=127.0.0.1;port=3307;dbname=census_scope", $username, $password);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // echo "Connected successfully";
-    // exit;    // TODO:
 } catch(PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
     exit;    // TODO:
@@ -142,7 +191,53 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	$response['status'] = $api_response_code[$response['code'] ]['HTTP Response'];
 
 	$data = array();
+
 	// Pie
+	$cols = get_cols($topic, 'pie', $conn);
+	if (count($cols) > 0){
+		$query = "SELECT ";
+		$data_labels = array();
+		foreach ($cols as $col) {
+			$query .= $col['col'];
+			if ($col != end($cols)) {
+				$query .= ",";
+			}
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "' AND Year=" . $year;
+
+		$labels = $data_labels;
+		$data = array();
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+		foreach ($conn->query($query) as $row) {
+			for($i = 0; $i < count($data_labels); $i++) {
+				array_push($data, $row[$i]);
+				$csv .= $row[$i];
+				if($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
+			}
+
+			$csv .= "\n";
+		}
+
+		// TODO: Build Pyramid Chart JSON
+
+		$data['pyramid'] = ["csv" => $csv,
+						  "chart" => "chart" ];
+
+	} else{
+		// TODO
+	}
 
 	// Trend
 	$cols = get_cols($topic, 'trend', $conn);
@@ -159,33 +254,89 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$labels = array();
 		$data = array();
 
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+
 		foreach ($conn->query($query) as $row) {
 			array_push($labels, $row[0]);
 			array_push($data, $row[1]);
+			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 
-		print_r($labels);
-		print_r($data);
+		// TODO: Build Trend (Line) Chart JSON
 
-		$data['trend'] = ["csv" => "csv",
+		$data['trend'] = ["csv" => $csv,
 						  "chart" => "chart" ];
-		exit;
 	 } 
 	 else { 
-	 	echo 'not cols';
-	 	exit;
+	 	// TODO 
 	 }
 
 	// Stacked
-	// $data['stacked'] = ["csv" =>,
-	// 				    "chart" => ]
+	$cols = get_cols($topic, 'stacked_bar', $conn);
+	if (count($cols) > 0) {
+		$data_labels = array("Year");
+		$query = "SELECT Year";
+		foreach ($cols as $col) {
+			$query .=  "," . $col['col'];
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+
+		$labels = array();
+		$data = array();
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+		$temp = array();
+
+		foreach ($conn->query($query) as $row) {
+			array_push($labels, $row[0]);
+			for($i = 0; $i < count($data_labels); $i++) {
+				$csv .= $row[$i];
+				if ($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
+			}
+
+			// TODO: Data and Labels arrays for Stacked Bar JSON
+			// for ($j = 1; $j < count($data_labels); $j++) {
+			// 	if $
+			// }
+
+			$csv .= "\n";
+		}
+		
+		// TODO: Build Stacked Bar Chart JSON
+
+		$data['stacked'] = ["csv" => $csv,
+						  "chart" => "chart" ];
+		// exit;
+	 } 
+	 else { 
+	 	// TODO 
+	 }
 
 	// // Table
-	// $data['trend'] = ["csv" =>]
+	// $data['trend'] = ["csv" => $csv,
+	// 					 "chart" => "chart"];
 
 	// // Pyramid
-	// $data['pyramid'] = ["csv" =>,
-	// 				    "chart" => ]
+	// $data['pyramid'] = ["csv" => $csv,
+	// 				       "chart" => "chart"];
 
 	
 	$response['data'] = $data;
