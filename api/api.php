@@ -18,18 +18,69 @@
 
 */
 
-$colors = 
-function get_cols($topic, $chart, $conn) {
-    $query = "SELECT col, label FROM col_map WHERE topic=" . "'" . $topic . "' AND " . $chart . "=1";
+include 'build_json.php';
 
-    $cols = array();    // cols = [[col0, label0], [col1, label1], ... , [coln, labeln]]
+$colors = array("#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362");
 
-    foreach ($conn->query($query) as $row) {
-    	array_push($cols, ['col' => $row['col'], 'label' => $row['label']]);
-    }
-
-    return $cols;
-}
 
 // --- Step 1: Initialize variables and functions
 
@@ -112,17 +163,17 @@ $response['status'] = 404;
 $response['data'] = NULL;
 
 // Connect to MySQL
-$servername = "127.0.0.1";
+$servername = "webapps4-mysql.miserver.it.umich.edu";
 $username = "root";
 $password = "";
 $table = 'sample';
+$database = "censcope"
+$port = '3306'
 
 try {
-    $conn = new PDO("mysql:host=127.0.0.1;port=3307;dbname=census_scope", $username, $password);
+    $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    // echo "Connected successfully";
-    // exit;    // TODO:
 } catch(PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
     exit;    // TODO:
@@ -159,13 +210,23 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$labels = array();
 		$data = array();
 
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+
 		foreach ($conn->query($query) as $row) {
 			array_push($labels, $row[0]);
 			array_push($data, $row[1]);
+			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 
-		print_r($labels);
-		print_r($data);
+		var_dump($csv); 
+		exit; 
 
 		$data['trend'] = ["csv" => "csv",
 						  "chart" => "chart" ];
