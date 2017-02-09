@@ -134,3 +134,67 @@ def chart_line(axislabels, setlabels, datasets, colors):
     j += "]},"
     j += '"options": {"title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
     return j
+
+
+def chart_popPyramid(axislabels, setlabels, dataset1, dataset2, colors):
+    """
+    Returns a string representing the JSON object for a population pyramid chart.
+    axislabels: a list of strings for the long axis on the chart
+    setlabels: a list containing 2 strings; one for each dataset (e.g. ['male', 'female'])
+    dataset1: a list of numerical values representing one dataset for the chart
+    dataset2: a list of numerical values representing the other dataset
+    colors: a list of 2 RGBA colors, one to color each dataset
+    """
+    #make one dataset negative to display properly
+    tmp = list()
+    for num in dataset1:
+        tmp.append(num * -1)
+
+    datasets1 = tmp
+
+    j = '{'
+    j += '"type": "horizontalBar", "data": '
+    j += '{'
+    j += '"labels": ['
+    for label in axislabels:
+        j += '"' + label + '"'
+        if label != axislabels[-1]:
+            j += ","
+    j += '], "datasets": ['
+
+    j += "{"
+    j += '"label": "'
+    j += setlabels[0]
+    j += '\", "backgroundColor":"' + colors[0] + '"'
+    j += ', "data": ['
+
+    for d in dataset1:
+        j += str(d)
+        if d != dataset1[-1]:
+            j += ","
+    j += "]}"
+
+    j += ","
+
+    j += "{"
+    j += '"label": "'
+    j += setlabels[1]
+    j += '\", "backgroundColor":"' + colors[1] + '"'
+    j += ', "data": ['
+
+    for d in dataset2:
+        j += str(d)
+        if d != dataset2[-1]:
+            j += ","
+    j += "]}"
+
+    j += "]}}"
+    
+    return j
+
+
+
+
+
+
+    
