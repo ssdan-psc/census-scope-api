@@ -7,10 +7,16 @@ def chart_pie(labels, dataset, colors):
     labels: a list of strings for the names of each slice
     dataset: a list of values for each slice
     colors: a list of (r, g, b, a) tuples for each slice
-    Labels aand data are matched up by index; for example dataset[0]
+    Labels and data are matched up by index; for example dataset[0]
     and labels[0] will be attributes of the same slice.
     """
 
+    #create a list of colors that is the appropriate length
+    newColors = []
+    for i in range(len(dataset)):
+        newColors.append(colors[i%len(colors)])
+    colors = newColors
+    
     j = '{'
     j += '"type": \"pie\", "data": '
     j += "{"
@@ -71,6 +77,12 @@ def chart_bar(axislabels, setlabels, datasets, colors):
     datasets: a list of lists of numerical values to plot
     """
 
+    #create a list of colors that is the appropriate length
+    newColors = []
+    for i in range(len(datasets)):
+        newColors.append(colors[i%len(colors)])
+    colors = newColors
+
     j = '{'
     j += '"type": \"bar\", "data":'
     j += "{"
@@ -112,6 +124,12 @@ def chart_line(axislabels, setlabels, datasets, colors):
     setlabels: a list of strings, one for each line
     """
 
+    #create a list of colors that is the appropriate length
+    newColors = []
+    for i in range(len(datasets)):
+        newColors.append(colors[i%len(colors)])
+    colors = newColors
+
     j = '{'
     j += '"type": \"line\", "data": '
     j += "{"
@@ -145,6 +163,11 @@ def chart_popPyramid(axislabels, setlabels, dataset1, dataset2, colors):
     dataset2: a list of numerical values representing the other dataset
     colors: a list of 2 RGBA colors, one to color each dataset
     """
+
+    #create a list of colors that is the appropriate length
+    newColors = [colors[0], colors[1]]
+    colors = newColors
+    
     #make one dataset negative to display properly
     tmp = list()
     for num in dataset1:
@@ -191,6 +214,86 @@ def chart_popPyramid(axislabels, setlabels, dataset1, dataset2, colors):
     j += "]}}"
     
     return j
+
+def create_color_list():
+    cd = []
+    cd.append((220, 40, 40, 1))
+    cd.append((40, 220, 70, 1))
+    cd.append((40, 106, 220, 1))
+    cd.append((220, 202, 40, 1))
+    cd.append((220, 154, 40, 1))
+    cd.append((222, 138, 213, 1))
+    cd.append((134, 98, 68, 1))
+    cd.append((134, 168, 83, 1))
+    cd.append((140, 142, 136, 1))
+    cd.append((80, 233, 228, 1))
+    return cd
+
+def main(args):
+    func = args[1]
+    color_list = create_color_list()
+    
+    if (func == 'pie'):
+        #example: pie red,white,blue 30,45,25
+        if not (len(args) == 4):
+            print('Error in json_builder.py: pie chart requires 2 lists as arguments')
+            return
+        else:
+            labels = args[2].split(',')
+            dataset = args[3].split(',')
+            return chart_pie(labels, dataset, color_list)
+
+    if (func == 'bar'):
+        #example: bar 1,2,3,4,5 chips,dip 2,3,4,5,6&4,3,2,1,0
+        #the third argument must be a list of lists
+        #   lists should be separated by '&'
+        #   elements within lists are separated by ','
+        if not (len(args) == 5):
+            print('Error in json_builder.py: bar chart requires 3 lists as arguments')
+            return
+        else:
+            axislabels = args[2].split(',')
+            setlabels = args[3].split(',')
+            setlist = args[4].split('&')
+            datasets = []
+            for s in setlist:
+                l = s.split(',')
+                datasets.append(l)
+            return chart_bar(axislabels, setlabels, datasets, color_list)
+
+    if (func == 'line'):
+        #example: line 1,2,3,4,5 chips,dip 2,3,4,5,6&4,3,2,1,0
+        #the third argument must be a list of lists
+        #   lists should be separated by '&'
+        #   elements within lists are separated by ','
+        if not (len(args) == 5):
+            print('Error in json_builder.py: line chart requires 3 lists as arguments')
+            return
+        else:
+            axislabels = args[2].split(',')
+            setlabels = args[3].split(',')
+            setlist = args[4].split('&')
+            datasets = []
+            for s in setlist:
+                l = s.split(',')
+                datasets.append(l)
+            return chart_line(axislabels, setlabels, datasets, color_list)
+
+    if (func == 'pyramid'):
+        #example: pyramid 1,2,3,4,5 male,female 1,2,3,4,5 62,72,82,92,10
+        if not (len(args) == 6):
+            print('Error in json_builder.py: line chart requires 4 lists as arguments')
+            return
+        else:
+            axislabels = args[2].split(',')
+            setlabels = args[3].split(',')
+            list1 = args[4].split(',')
+            list2 = args[5].split(',')
+            return chart_popPyramid(axislabels, setlabels, list1, list2, color_list)
+        
+    return
+
+main(sys.argv)
 
 
 
