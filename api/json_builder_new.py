@@ -135,8 +135,10 @@ def chart_line(axislabels, setlabels, datasets, colors):
     j += "{"
     j += '"labels": ['
     #j += str(axislabels)
-    for l in axislabels:
-        j += str(l)
+    for i in range(len(axislabels)):
+        j += str(axislabels[i])
+        if not (i == len(axislabels) - 1):
+            j += ','
     j += '], "datasets": ['
     for i in range(0,len(datasets)):
         j += "{"
@@ -144,9 +146,13 @@ def chart_line(axislabels, setlabels, datasets, colors):
         j += setlabels[i]
         j += '\", "backgroundColor":"' + colors[i] + '"'
         j += ', "borderColor":"' + colors[i] + '"'
-        j += ', "fill": false, "data": '
-        j += str(datasets[i])
-        j += "}"
+        j += ', "fill": false, "data": ['
+        #j += str(datasets[i])
+        for d in range(len(datasets[i])):
+            j += str(datasets[i][d])
+            if not (d == len(datasets[i]) - 1):
+                j += ','
+        j += "]}"
 
         if i != len(datasets) - 1:
             j += ","
