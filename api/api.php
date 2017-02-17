@@ -19,7 +19,7 @@
 
 include 'build_json.php';
 ini_set('display_errors', 'On');
-error_reporting(E_ALL | E_STRICT);
+error_reporting(E_ALL);
 
 // --- Step 1: Initialize variables and functions
 
@@ -42,13 +42,14 @@ function deliver_response($format, $api_response){
 
 	// Set HTTP Response
 	header('HTTP/1.1 '.$api_response['status'].' '.$http_response_code[ $api_response['status'] ]);
-	header('Access-Control-Allow-Origin: *');
 
 	// Process different content types
 	if( strcasecmp($format,'json') == 0 ){
 
 		// Set HTTP Response Content Type
 		header('Content-Type: application/json; charset=utf-8');
+		// TODO: Should not allow all origins
+		header('Access-Control-Allow-Origin: *');
 
 		// Format data into a JSON response
 		$json_response = json_encode($api_response);
@@ -103,12 +104,12 @@ $response['status'] = 404;
 $response['data'] = NULL;
 
 // Connect to MySQL
-$servername = "webapps4-mysql.miserver.it.umich.edu";
-$username = "censcope";
-$password = "ChangeMeNow2017_censcope";
+$servername = "127.0.0.1";
+$username = "root";
+$password = "";
 $table = 'sample';
-$database = "censcope";
-$port = '3306';
+$database = 'census_scope';
+$port = '3307';
 
 try {
     $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
@@ -270,24 +271,88 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	//  	$data['stacked'] = array("error" =>  "placeholder error message");
 	//  }
 
-	// // Table
-	$data['table'] = array("error" => "error message");
-	// $cols = get_cols($topic, 'table', $conn);
-	// if (count($cols) > 0) {
-	// 	// $data['trend'] = ["csv" => $csv, "chart" => "chart"];
-	// }else {
-	// 	$data['table'] = array("error" => "placeholder error message")
-	// }
+	// Table
+	$cols = get_cols($topic, 'tbl', $conn);
+	if (count($cols) > 0) {
+		$data_labels = array("Year");
+		$query = "SELECT Year";
+		foreach ($cols as $col) {
+			$query .=  "," . $col['col'];
+			array_push($data_labels, $col['label']);
+		}
 
-	// // // Pyramid
-	$data['pyramid'] = array("error" => "error message");
-	// $cols1 = get_cols($topic, 'pyramid2', $conn);
-	// $cols2 = get_cols($topic, 'pyramid2', $conn);
-	// if (count($cols1) > 0 && count($cols2) > 0) {
-	// 	// $data['pyramid'] = ["csv" => $csv, "chart" => $pyramid_chart];
-	// } else {
-	// 	data['pyramid'] = array("error" => "placeholder error message");
-	// }
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+
+		foreach ($conn->query($query) as $row) {
+			$csv .= $row[0] . "," . $row[1] . "\n";
+		}
+
+		$data['table'] = ["csv" => $csv];
+	}else {
+		$data['table'] = array("error" => "placeholder error message");
+	}
+
+	// Pyramid
+	$cols1 = get_cols($topic, 'pyramid1', $conn);
+	$cols2 = get_cols($topic, 'pyramid2', $conn);
+	if (count($cols1) > 0 && count($cols2) > 0) {
+		$labels = array();
+		$query1 = "SELECT ";
+		foreach ($cols1 as $col) {
+			$query1 .= $col['col'];
+			array_push($labels, $col['label']);
+			if ($col != end($cols1)) {
+				$query1 .= ",";
+			}
+		}
+
+		// TODO: Change hardcoded table
+		$query1 .= " FROM " . "popPyramid2014_15" . " WHERE Name='" . $geo . "'";
+
+		$query2 = "SELECT ";
+		foreach ($cols2 as $col) {
+			$query2 .= $col['col'];
+			if ($col != end($cols2)) {
+				$query2 .= ",";
+			}
+		}
+
+		$list1 = array();
+		foreach ($conn->query($query1) as $row) {
+			for ($i = 0; $i < count($row) / 2; $i++) {
+    			array_push($list1, $row[$i]);
+			}
+		}
+
+		// TODO: Change hardcoded table
+		$list2 = array();
+		$query2 .= " FROM " . "popPyramid2014_15" . " WHERE Name='" . $geo . "'";
+		foreach ($conn->query($query2) as $row) {
+			for ($i = 0; $i < count($row) / 2; $i++) {
+    			array_push($list2, $row[$i]);
+			}
+		}
+
+		$csv = '';
+		$csv .= 'Sex, '.implode(',', $labels)."\n";
+		$csv .= 'Male, '.implode(',', $list1)."\n";
+		$csv .= "Female,  ".implode(',', $list2)."\n";
+
+		$pyramid_call = "python json_builder_new.py pyramid \"". implode(',', $labels)."\" Male,Female ".implode(',',$list1)." ".implode(',', $list2);
+		$pyramid_chart = exec($pyramid_call);
+		$data['pyramid'] = ["csv" => $csv, "chart" => $pyramid_chart];
+	} else {
+		$data['pyramid'] = array("error" => "placeholder error message");
+	}
 	
 	$response['data'] = $data;
 }
