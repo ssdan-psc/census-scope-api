@@ -217,6 +217,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	 }
 
 	// // Stacked
+	$data['stacked'] = array("error" => "error message");
 	// $cols = get_cols($topic, 'stacked_bar', $conn);
 	// if (count($cols) > 0) {
 	// 	$data_labels = array("Year");
@@ -269,6 +270,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	//  }
 
 	// // Table
+	$data['table'] = array("error" => "error message");
 	// $cols = get_cols($topic, 'table', $conn);
 	// if (count($cols) > 0) {
 	// 	// $data['trend'] = ["csv" => $csv, "chart" => "chart"];
@@ -277,6 +279,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	// }
 
 	// // // Pyramid
+	$data['pyramid'] = array("error" => "error message");
 	// $cols1 = get_cols($topic, 'pyramid2', $conn);
 	// $cols2 = get_cols($topic, 'pyramid2', $conn);
 	// if (count($cols1) > 0 && count($cols2) > 0) {
