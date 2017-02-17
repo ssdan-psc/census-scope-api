@@ -91,7 +91,8 @@ $(document).ready(function() {
     $.ajax({
         async: false,
         type: 'GET',
-        url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=population',
+        // Default United States & 2010
+        url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=' + topic,
         success: function (data) {
             console.log(data['data']['pyramid'])
             var pie_data = data['data']['pie'];
