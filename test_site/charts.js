@@ -93,7 +93,7 @@ $(document).ready(function() {
         type: 'GET',
         url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=population',
         success: function (data) {
-            console.log(data['data']['trend'])
+            console.log(data['data']['pyramid'])
             var pie_data = data['data']['pie'];
             var trend_data = data['data']['trend']
             var stacked_data = data['data']['stacked']
@@ -113,7 +113,8 @@ $(document).ready(function() {
                 line_ctx.getContext('2d').font = "20px Helvetica";
                 line_ctx.getContext('2d').fillText(trend_data['error'], 50, 50);
             } else {
-                var full_line_json = trend_data['chart'];
+                var full_line_json = JSON.parse(trend_data['chart']);
+                console.log(full_line_json);
                 trend_csv = trend_data['csv'];
                 lineChart = new Chart(line_ctx, full_line_json);
             }
