@@ -131,18 +131,18 @@ def chart_line(axislabels, setlabels, datasets, colors):
     colors = newColors
 
     j = '{'
-    j += '"type": \"line\", "data": '
+    j += 'type: \"line\", data: '
     j += "{"
-    j += '"labels": '
+    j += 'labels: '
     j += str(axislabels)
-    j += ', "datasets": ['
+    j += ', datasets: ['
     for i in range(0,len(datasets)):
         j += "{"
-        j += '"label": \"'
+        j += 'label: \"'
         j += setlabels[i]
-        j += '\", "backgroundColor":"' + colors[i] + '"'
-        j += ', "borderColor":"' + colors[i] + '"'
-        j += ', "fill": false, "data": '
+        j += '\", backgroundColor:"' + colors[i] + '"'
+        j += ', borderColor:"' + colors[i] + '"'
+        j += ', fill: false, data: '
         j += str(datasets[i])
         j += "}"
 
@@ -150,7 +150,7 @@ def chart_line(axislabels, setlabels, datasets, colors):
             j += ","
 
     j += "]},"
-    j += '"options": {"title": { "display": true, "text": \"Line Chart\"}, "scales": {"yAxes": [{"ticks":{ "beginAtZero": true}}]}}}'
+    j += 'options: {title: { display: true, text: \"Line Chart\"}, scales: {yAxes: [{ticks:{ beginAtZero: true}}]}}}'
     return j
 
 

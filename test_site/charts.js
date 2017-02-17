@@ -91,13 +91,14 @@ $(document).ready(function() {
     $.ajax({
         async: false,
         type: 'GET',
-        url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=x',
+        url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=population',
         success: function (data) {
-            var pie_data = JSON.parse(data)['pie'];
-            var trend_data = JSON.parse(data)['trend']
-            var stacked_data = JSON.parse(data)['stacked']
-            var table_data = JSON.parse(data)['table']
-            var pyramid_data = JSON.parse(data)['pyramid']
+            console.log(data['data']['trend'])
+            var pie_data = data['data']['pie'];
+            var trend_data = data['data']['trend']
+            var stacked_data = data['data']['stacked']
+            var table_data = data['data']['table']
+            var pyramid_data = data['data']['pyramid']
 
             if ('error' in pie_data) {
                 pie_ctx.getContext('2d').font = "20px Helvetica";
@@ -197,17 +198,18 @@ $(document).ready(function() {
     };
 
 
-    $("#chart_form").on("submit", function(event) {
+    $("#chart_form").on("submit", function (event) {
+        event.preventDefault();
         $.ajax({
             async: false,
             type: 'GET',
-            url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=x',
+            url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=population',
             success: function (data) {
-                var pie_data = JSON.parse(data)['pie'];
-                var trend_data = JSON.parse(data)['trend']
-                var stacked_data = JSON.parse(data)['stacked']
-                var table_data = JSON.parse(data)['table']
-                var pyramid_data = JSON.parse(data)['pyramid']
+                var pie_data = data['data']['pie'];
+                var trend_data = data['data']['trend']
+                var stacked_data = data['data']['stacked']
+                var table_data = data['data']['table']
+                var pyramid_data = data['data']['pyramid']
 
                 if ('error' in pie_data) {
                     pie_ctx.getContext('2d').font = "20px Helvetica";
