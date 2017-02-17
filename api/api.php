@@ -168,7 +168,7 @@ $response['data'] = NULL;
 // Connect to MySQL
 $servername = "webapps4-mysql.miserver.it.umich.edu";
 $username = "censcope";
-$password = "ChangeMeNow2017_censcope";;
+$password = "ChangeMeNow2017_censcope";
 $table = 'sample';
 $database = "censcope";
 $port = '3306';
@@ -195,7 +195,53 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	$response['status'] = $api_response_code[$response['code'] ]['HTTP Response'];
 
 	$data = array();
+
 	// Pie
+	$cols = get_cols($topic, 'pie', $conn);
+	if (count($cols) > 0){
+		$query = "SELECT ";
+		$data_labels = array();
+		foreach ($cols as $col) {
+			$query .= $col['col'];
+			if ($col != end($cols)) {
+				$query .= ",";
+			}
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "' AND Year=" . $year;
+
+		$labels = $data_labels;
+		$data = array();
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+		foreach ($conn->query($query) as $row) {
+			for($i = 0; $i < count($data_labels); $i++) {
+				array_push($data, $row[$i]);
+				$csv .= $row[$i];
+				if($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
+			}
+
+			$csv .= "\n";
+		}
+
+		// TODO: Build Pyramid Chart JSON
+
+		$data['pyramid'] = array("csv" => $csv,
+						  "chart" => "chart");;
+
+	} else{
+		// TODO
+	}
 
 	// Trend
 	$cols = get_cols($topic, 'trend', $conn);
@@ -227,23 +273,71 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 		
-		$data['trend'] = array("csv" => $csv, "chart" => "chart");;
+		$data['trend'] = array("csv" => $csv, "chart" => "chart");
 	 } 
 	 else { 
-	 	echo 'not cols';
-	 	exit;
+	 	// TODO 
 	 }
 
 	// Stacked
-	// $data['stacked'] = ["csv" =>,
-	// 				    "chart" => ]
+	$cols = get_cols($topic, 'stacked_bar', $conn);
+	if (count($cols) > 0) {
+		$data_labels = array("Year");
+		$query = "SELECT Year";
+		foreach ($cols as $col) {
+			$query .=  "," . $col['col'];
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+
+		$labels = array();
+		$data = array();
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+		$temp = array();
+
+		foreach ($conn->query($query) as $row) {
+			array_push($labels, $row[0]);
+			for($i = 0; $i < count($data_labels); $i++) {
+				$csv .= $row[$i];
+				if ($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
+			}
+
+			// TODO: Data and Labels arrays for Stacked Bar JSON
+			// for ($j = 1; $j < count($data_labels); $j++) {
+			// 	if $
+			// }
+
+			$csv .= "\n";
+		}
+		
+		// TODO: Build Stacked Bar Chart JSON
+
+		$data['stacked'] = array("csv" => $csv,
+						  "chart" => "chart");
+		// exit;
+	 } 
+	 else { 
+	 	// TODO 
+	 }
 
 	// // Table
-	// $data['trend'] = ["csv" =>]
+	// $data['trend'] = ["csv" => $csv,
+	// 					 "chart" => "chart"];
 
 	// // Pyramid
-	// $data['pyramid'] = ["csv" =>,
-	// 				    "chart" => ]
+	// $data['pyramid'] = ["csv" => $csv,
+	// 				       "chart" => "chart"];
 
 	
 	$response['data'] = $data;
