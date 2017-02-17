@@ -104,12 +104,20 @@ $response['status'] = 404;
 $response['data'] = NULL;
 
 // Connect to MySQL
-$servername = "127.0.0.1";
-$username = "root";
-$password = "";
+//$servername = "127.0.0.1";
+//$username = "root";
+// $password = "";
+// $table = 'sample';
+// $database = 'census_scope';
+// $port = '3307';
+
+// Connect to MySQL
+$servername = "webapps4-mysql.miserver.it.umich.edu";
+$username = "censcope";
+$password = "ChangeMeNow2017_censcope";
 $table = 'sample';
-$database = 'census_scope';
-$port = '3307';
+$database = "censcope";
+$port = '3306';
 
 try {
     $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
@@ -296,7 +304,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 
-		$data['table'] = ["csv" => $csv];
+		$data['table'] = array("csv" => $csv);
 	}else {
 		$data['table'] = array("error" => "placeholder error message");
 	}
@@ -349,7 +357,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 		$pyramid_call = "python json_builder_new.py pyramid \"". implode(',', $labels)."\" Male,Female ".implode(',',$list1)." ".implode(',', $list2);
 		$pyramid_chart = exec($pyramid_call);
-		$data['pyramid'] = ["csv" => $csv, "chart" => $pyramid_chart];
+		$data['pyramid'] = array("csv" => $csv, "chart" => $pyramid_chart);
 	} else {
 		$data['pyramid'] = array("error" => "placeholder error message");
 	}
