@@ -214,7 +214,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$data['trend'] = array("csv" => $csv, "chart" => $chart);
 	 } 
 	 else { 
-	 	// TODO 
+	      	$data['trend'] = array("error" =>  "placeholder error message");
 	 }
 
 	// Stacked
