@@ -42,6 +42,7 @@ function deliver_response($format, $api_response){
 
 	// Set HTTP Response
 	header('HTTP/1.1 '.$api_response['status'].' '.$http_response_code[ $api_response['status'] ]);
+	header('Access-Control-Allow-Origin: *');
 
 	// Process different content types
 	if( strcasecmp($format,'json') == 0 ){
