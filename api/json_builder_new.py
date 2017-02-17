@@ -136,7 +136,7 @@ def chart_line(axislabels, setlabels, datasets, colors):
     j += '"labels": '
     j += str(axislabels)
     j += ', "datasets": ['
-    for i in len(datasets):
+    for i in range(0,len(datasets)):
         j += "{"
         j += '"label": \"'
         j += setlabels[i]
@@ -215,24 +215,69 @@ def chart_popPyramid(axislabels, setlabels, dataset1, dataset2, colors):
     
     return j
 
-def create_color_list():
-    cd = []
-    cd.append((220, 40, 40, 1))
-    cd.append((40, 220, 70, 1))
-    cd.append((40, 106, 220, 1))
-    cd.append((220, 202, 40, 1))
-    cd.append((220, 154, 40, 1))
-    cd.append((222, 138, 213, 1))
-    cd.append((134, 98, 68, 1))
-    cd.append((134, 168, 83, 1))
-    cd.append((140, 142, 136, 1))
-    cd.append((80, 233, 228, 1))
-    return cd
 
 def main(args):
     func = args[1]
-    color_list = create_color_list()
-
+    color_list = ["#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362",
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#cb62ff",
+          "#72ff62",
+          "#ffa362"]
     if (func == 'pie'):
         #example: pie red,white,blue 30,45,25
         if not (len(args) == 4):
@@ -293,8 +338,7 @@ def main(args):
         
     return
 
-main(sys.argv)
-
+print(main(sys.argv))
 
 
 

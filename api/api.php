@@ -2,7 +2,7 @@
 /*
 	API Demo
 
-	This script provides a RESTful API interface for a web application
+	This script provides a RESTful AI interface for a web application
 
 	Input:
 
@@ -10,7 +10,6 @@
 		$_GET['method'] = []
 
 	Output: A formatted HTTP response
-
 	Author: Mark Roland (http://markroland.com/portfolio/restful-php-api)
 
 	History:
@@ -19,71 +18,8 @@
 */
 
 include 'build_json.php';
-
 ini_set('display_errors', 'On');
 error_reporting(E_ALL | E_STRICT);
-
-$colors = array("#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362",
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#cb62ff",
-          "#72ff62",
-          "#ffa362");
-
 
 // --- Step 1: Initialize variables and functions
 
@@ -273,14 +209,9 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 		
-		var_dump($labels);
-		var_dump($chart_data);
-		
 		$call = "python json_builder_new.py line ". implode(',', $labels)." ".$topic." ".implode(',',$chart_data);
-		var_dump($call);
-		$chart = passthru($call);
-		var_dump($chart);
-		$data['trend'] = array("csv" => $csv, "chart" => "chart");
+		$chart = exec($call);
+		$data['trend'] = array("csv" => $csv, "chart" => $chart);
 	 } 
 	 else { 
 	 	// TODO 
