@@ -142,7 +142,7 @@ def chart_line(axislabels, setlabels, datasets, colors):
         j += setlabels[i]
         j += '\", backgroundColor:"' + colors[i] + '"'
         j += ', borderColor:"' + colors[i] + '"'
-        j += ', fill: false, "data": '
+        j += ', fill: false, data: '
         j += str(datasets[i])
         j += "}"
 
