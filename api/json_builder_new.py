@@ -150,7 +150,7 @@ def chart_line(axislabels, setlabels, datasets, colors):
             j += ","
 
     j += "]},"
-    j += 'options: {title: { display: true, "text": \"Line Chart\"}, scales: {yAxes: [{ticks:{ beginAtZero: true}}]}}}'
+    j += 'options: {title: { display: true, text: \"Line Chart\"}, scales: {yAxes: [{ticks:{ beginAtZero: true}}]}}}'
     return j
 
 
