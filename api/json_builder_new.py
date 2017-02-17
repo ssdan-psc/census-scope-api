@@ -133,9 +133,11 @@ def chart_line(axislabels, setlabels, datasets, colors):
     j = '{'
     j += '"type": \"line\", "data": '
     j += "{"
-    j += '"labels": '
-    j += str(axislabels)
-    j += ', "datasets": ['
+    j += '"labels": ['
+    #j += str(axislabels)
+    for l in axislabels:
+        j += str(l)
+    j += '], "datasets": ['
     for i in range(0,len(datasets)):
         j += "{"
         j += '"label": \"'
