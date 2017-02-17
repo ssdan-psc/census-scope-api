@@ -202,10 +202,14 @@ $(document).ready(function() {
 
     $("#chart_form").on("submit", function (event) {
         event.preventDefault();
+
+        var geo = $('#geo').val();
+        var year = $('#year').val();
+
         $.ajax({
             async: false,
             type: 'GET',
-            url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=population',
+            url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic,
             success: function (data) {
                 var pie_data = data['data']['pie'];
                 var trend_data = data['data']['trend']
