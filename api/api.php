@@ -134,6 +134,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 	// Pie
 	$cols = get_cols($topic, 'pie', $conn);
+	$topic = 'education'	// TODO: Hardcoded topic
 	if (count($cols) > 0){
 		$query = "SELECT ";
 		$data_labels = array();
@@ -170,13 +171,12 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= "\n";
 		}
 
-		$call = "python json_builder_new.py pie ". implode(',', $labels)." "..implode(',',$chart_data);
-		$chart = exec($call);
+		$pie_call = "python json_builder_new.py pie ". implode(',', $labels)." "..implode(',',$pie_data);
+		$pie_chart = exec($pie_call);
 
-		$data['pyramid'] = array("csv" => $csv, "chart" => $chart);;
-
+		$data['pie'] = array("csv" => $csv, "chart" => $pie_chart);
 	} else{
-		$data['pyramid'] = array("error" =>  "placeholder error message");
+		$data['pie'] = array("error" =>  "placeholder error message");
 	}
 
 	// Trend
@@ -192,7 +192,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
 
 		$labels = array();
-		$chart_data = array();
+		$trend_data = array();
 
 		// Add headers to csv
 		$csv = '';
@@ -205,78 +205,86 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 		foreach ($conn->query($query) as $row) {
 			array_push($labels, $row[0]);
-			array_push($chart_data, $row[1]);
+			array_push($trend_data, $row[1]);
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 		
-		$call = "python json_builder_new.py line ". implode(',', $labels)." ".$topic." ".implode(',',$chart_data);
-		$chart = exec($call);
-		$data['trend'] = array("csv" => $csv, "chart" => $chart);
+		$trend_call = "python json_builder_new.py line ". implode(',', $labels)." ".$topic." ".implode(',',$trend_data);
+		$trend_chart = exec($trend_call);
+		$data['trend'] = array("csv" => $csv, "chart" => $trend_chart);
 	 } 
 	 else { 
 	      	$data['trend'] = array("error" =>  "placeholder error message");
 	 }
 
-	// Stacked
-	$cols = get_cols($topic, 'stacked_bar', $conn);
-	if (count($cols) > 0) {
-		$data_labels = array("Year");
-		$query = "SELECT Year";
-		foreach ($cols as $col) {
-			$query .=  "," . $col['col'];
-			array_push($data_labels, $col['label']);
-		}
+	// // Stacked
+	// $cols = get_cols($topic, 'stacked_bar', $conn);
+	// if (count($cols) > 0) {
+	// 	$data_labels = array("Year");
+	// 	$query = "SELECT Year";
+	// 	foreach ($cols as $col) {
+	// 		$query .=  "," . $col['col'];
+	// 		array_push($data_labels, $col['label']);
+	// 	}
 
-		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+	// 	$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
 
-		$labels = array();
-		$data = array();
+	// 	$labels = array();
+	// 	$data = array();
 
-		// Add headers to csv
-		$csv = '';
-		foreach ($data_labels as $label){
-			$csv .= $label;
-			if ($label != end($data_labels)) {$csv .= ",";}
-		}
+	// 	// Add headers to csv
+	// 	$csv = '';
+	// 	foreach ($data_labels as $label){
+	// 		$csv .= $label;
+	// 		if ($label != end($data_labels)) {$csv .= ",";}
+	// 	}
 
-		$csv .= "\n";
-		$temp = array();
+	// 	$csv .= "\n";
+	// 	$temp = array();
 
-		foreach ($conn->query($query) as $row) {
-			array_push($labels, $row[0]);
-			for($i = 0; $i < count($data_labels); $i++) {
-				$csv .= $row[$i];
-				if ($i != count($data_labels) - 1) {
-					$csv .= ",";
-				}
-			}
+	// 	foreach ($conn->query($query) as $row) {
+	// 		array_push($labels, $row[0]);
+	// 		for($i = 0; $i < count($data_labels); $i++) {
+	// 			$csv .= $row[$i];
+	// 			if ($i != count($data_labels) - 1) {
+	// 				$csv .= ",";
+	// 			}
+	// 		}
 
-			// TODO: Data and Labels arrays for Stacked Bar JSON
-			// for ($j = 1; $j < count($data_labels); $j++) {
-			// 	if $
-			// }
+	// 		// TODO: Data and Labels arrays for Stacked Bar JSON
+	// 		// for ($j = 1; $j < count($data_labels); $j++) {
+	// 		// 	if $
+	// 		// }
 
-			$csv .= "\n";
-		}
+	// 		$csv .= "\n";
+	// 	}
 		
-		// TODO: Build Stacked Bar Chart JSON
+	// 	// TODO: Build Stacked Bar Chart JSON
 
-		$data['stacked'] = array("csv" => $csv,
-						  "chart" => "chart");
-		// exit;
-	 } 
-	 else { 
-	 	$data['stacked'] = array("error" =>  "placeholder error message");
-	 }
+	// 	$data['stacked'] = array("csv" => $csv,
+	// 					  "chart" => "chart");
+	// 	// exit;
+	//  } 
+	//  else { 
+	//  	$data['stacked'] = array("error" =>  "placeholder error message");
+	//  }
 
 	// // Table
-	// $data['trend'] = ["csv" => $csv,
-	// 					 "chart" => "chart"];
+	// $cols = get_cols($topic, 'table', $conn);
+	// if (count($cols) > 0) {
+	// 	// $data['trend'] = ["csv" => $csv, "chart" => "chart"];
+	// }else {
+	// 	$data['table'] = array("error" => "placeholder error message")
+	// }
 
-	// // Pyramid
-	// $data['pyramid'] = ["csv" => $csv,
-	// 				       "chart" => "chart"];
-
+	// // // Pyramid
+	// $cols1 = get_cols($topic, 'pyramid2', $conn);
+	// $cols2 = get_cols($topic, 'pyramid2', $conn);
+	// if (count($cols1) > 0 && count($cols2) > 0) {
+	// 	// $data['pyramid'] = ["csv" => $csv, "chart" => $pyramid_chart];
+	// } else {
+	// 	data['pyramid'] = array("error" => "placeholder error message");
+	// }
 	
 	$response['data'] = $data;
 }
