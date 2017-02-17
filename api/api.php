@@ -1,8 +1,6 @@
 <?php
 /*
-	API Demo
-
-	This script provides a RESTful AI interface for a web application
+	Adapted from http://markroland.com/portfolio/restful-php-api)
 
 	Input:
 
@@ -10,14 +8,10 @@
 		$_GET['method'] = []
 
 	Output: A formatted HTTP response
-	Author: Mark Roland (http://markroland.com/portfolio/restful-php-api)
-
-	History:
-		11/13/2012 - Created
-
 */
 
 include 'build_json.php';
+
 ini_set('display_errors', 'On');
 error_reporting(E_ALL);
 
@@ -104,20 +98,20 @@ $response['status'] = 404;
 $response['data'] = NULL;
 
 // Connect to MySQL
-//$servername = "127.0.0.1";
-//$username = "root";
-// $password = "";
-// $table = 'sample';
-// $database = 'census_scope';
-// $port = '3307';
+$servername = "127.0.0.1";
+$username = "root";
+$password = "";
+$table = 'sample';
+$database = 'census_scope';
+$port = '3307';
 
 // Connect to MySQL
-$servername = "webapps4-mysql.miserver.it.umich.edu";
-$username = "censcope";
-$password = "ChangeMeNow2017_censcope";
-$table = 'sample';
-$database = "censcope";
-$port = '3306';
+// $servername = "webapps4-mysql.miserver.it.umich.edu";
+// $username = "censcope";
+// $password = "ChangeMeNow2017_censcope";
+// $table = 'sample';
+// $database = "censcope";
+// $port = '3306';
 
 try {
     $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
@@ -226,58 +220,63 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	      	$data['trend'] = array("error" =>  "placeholder error message");
 	 }
 
-	// // Stacked
-	$data['stacked'] = array("error" => "error message");
-	// $cols = get_cols($topic, 'stacked_bar', $conn);
-	// if (count($cols) > 0) {
-	// 	$data_labels = array("Year");
-	// 	$query = "SELECT Year";
-	// 	foreach ($cols as $col) {
-	// 		$query .=  "," . $col['col'];
-	// 		array_push($data_labels, $col['label']);
-	// 	}
+	// Stacked
+	$cols = get_cols($topic, 'stacked_bar', $conn);
+	if (count($cols) > 0) {
+		$data_labels = array("Year");
+		$query = "SELECT Year";
+		foreach ($cols as $col) {
+			$query .=  "," . $col['col'];
+			array_push($data_labels, $col['label']);
+		}
 
-	// 	$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
 
-	// 	$labels = array();
-	// 	$data = array();
+		$labels = array();
+		$data = array();
 
-	// 	// Add headers to csv
-	// 	$csv = '';
-	// 	foreach ($data_labels as $label){
-	// 		$csv .= $label;
-	// 		if ($label != end($data_labels)) {$csv .= ",";}
-	// 	}
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
 
-	// 	$csv .= "\n";
-	// 	$temp = array();
+		$csv .= "\n";
+		$datasets = array();
 
-	// 	foreach ($conn->query($query) as $row) {
-	// 		array_push($labels, $row[0]);
-	// 		for($i = 0; $i < count($data_labels); $i++) {
-	// 			$csv .= $row[$i];
-	// 			if ($i != count($data_labels) - 1) {
-	// 				$csv .= ",";
-	// 			}
-	// 		}
+		foreach ($conn->query($query) as $row) {
+			array_push($labels, $row[0]);
+			$new_dataset = array();
+			for($i = 0; $i < count($data_labels); $i++) {
+				$csv .= $row[$i];
+				if ($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
 
-	// 		// TODO: Data and Labels arrays for Stacked Bar JSON
-	// 		// for ($j = 1; $j < count($data_labels); $j++) {
-	// 		// 	if $
-	// 		// }
+				if($i != 0) {
+					array_push($new_dataset, $row[$i]);
+				}
+			}
+			array_push($datasets, $new_dataset);
+			$csv .= "\n";
+		}
 
-	// 		$csv .= "\n";
-	// 	}
-		
-	// 	// TODO: Build Stacked Bar Chart JSON
+		$bar_call = "python json_builder_new.py bar \"". implode(',', $data_labels)."\" ".implode(',', $labels)." ";
+		foreach($datasets as $dataset) {
+			$bar_call .= implode(',', $dataset);
+			if ($dataset != end($datasets)) {
+				$bar_call .= "&";
+			}
+		}
 
-	// 	$data['stacked'] = array("csv" => $csv,
-	// 					  "chart" => "chart");
-	// 	// exit;
-	//  } 
-	//  else { 
-	//  	$data['stacked'] = array("error" =>  "placeholder error message");
-	//  }
+		echo $bar_call;
+		$bar_chart = exec($bar_call);
+
+		$data['stacked'] = array("csv" => $csv, "chart" => $bar_chart);
+	 } else { 
+	 	$data['stacked'] = array("error" =>  "placeholder error message");
+	}
 
 	// Table
 	$cols = get_cols($topic, 'tbl', $conn);
