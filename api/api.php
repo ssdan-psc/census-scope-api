@@ -134,7 +134,6 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 	// Pie
 	$cols = get_cols($topic, 'pie', $conn);
-	$topic = 'education'	// TODO: Hardcoded topic
 	if (count($cols) > 0){
 		$query = "SELECT ";
 		$data_labels = array();
@@ -171,7 +170,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= "\n";
 		}
 
-		$pie_call = "python json_builder_new.py pie ". implode(',', $labels)." "..implode(',',$pie_data);
+		$pie_call = "python json_builder_new.py pie \"". implode(',', $labels)."\" ".implode(',',$pie_data);
 		$pie_chart = exec($pie_call);
 
 		$data['pie'] = array("csv" => $csv, "chart" => $pie_chart);
@@ -209,7 +208,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 		
-		$trend_call = "python json_builder_new.py line ". implode(',', $labels)." ".$topic." ".implode(',',$trend_data);
+		$trend_call = "python json_builder_new.py line \"". implode(',', $labels)."\" ".$topic." ".implode(',',$trend_data);
 		$trend_chart = exec($trend_call);
 		$data['trend'] = array("csv" => $csv, "chart" => $trend_chart);
 	 } 
