@@ -130,7 +130,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	$response['code'] = 1;
 	$response['status'] = $api_response_code[$response['code'] ]['HTTP Response'];
 
-	$data = array();
+	$pie_data = array();
 
 	// Pie
 	$cols = get_cols($topic, 'pie', $conn);
@@ -160,7 +160,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$csv .= "\n";
 		foreach ($conn->query($query) as $row) {
 			for($i = 0; $i < count($data_labels); $i++) {
-				array_push($data, $row[$i]);
+				array_push($pie_data, $row[$i]);
 				$csv .= $row[$i];
 				if($i != count($data_labels) - 1) {
 					$csv .= ",";
@@ -170,13 +170,13 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			$csv .= "\n";
 		}
 
-		// TODO: Build Pyramid Chart JSON
+		$call = "python json_builder_new.py pie ". implode(',', $labels)." "..implode(',',$chart_data);
+		$chart = exec($call);
 
-		$data['pyramid'] = array("csv" => $csv,
-						  "chart" => "chart");;
+		$data['pyramid'] = array("csv" => $csv, "chart" => $chart);;
 
 	} else{
-		// TODO
+		$data['pyramid'] = array("error" =>  "placeholder error message");
 	}
 
 	// Trend
@@ -266,7 +266,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		// exit;
 	 } 
 	 else { 
-	 	// TODO 
+	 	$data['stacked'] = array("error" =>  "placeholder error message");
 	 }
 
 	// // Table
