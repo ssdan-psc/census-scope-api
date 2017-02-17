@@ -20,6 +20,9 @@
 
 include 'build_json.php';
 
+ini_set('display_errors', 'On');
+error_reporting(E_ALL | E_STRICT);
+
 $colors = array("#FF6384",
           "#36A2EB",
           "#FFCE56",
@@ -164,11 +167,11 @@ $response['data'] = NULL;
 
 // Connect to MySQL
 $servername = "webapps4-mysql.miserver.it.umich.edu";
-$username = "root";
-$password = "";
+$username = "censcope";
+$password = "ChangeMeNow2017_censcope";;
 $table = 'sample';
-$database = "censcope"
-$port = '3306'
+$database = "censcope";
+$port = '3306';
 
 try {
     $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
@@ -184,7 +187,6 @@ try {
 
 // API 
 if(strcasecmp($_GET['method'],'hello') == 0){
-
 	$topic = $_GET['topic'];
 	$geo = $_GET['geo'];
 	$year = $_GET['year'];
@@ -208,7 +210,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
 
 		$labels = array();
-		$data = array();
+	
 
 		// Add headers to csv
 		$csv = '';
@@ -224,13 +226,8 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			array_push($data, $row[1]);
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
-
-		echo $csv; 
-		exit; 
-
-		$data['trend'] = ["csv" => "csv",
-						  "chart" => "chart" ];
-		exit;
+		
+		$data['trend'] = array("csv" => $csv, "chart" => "chart");;
 	 } 
 	 else { 
 	 	echo 'not cols';
