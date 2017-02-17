@@ -232,7 +232,7 @@ def create_color_list():
 def main(args):
     func = args[1]
     color_list = create_color_list()
-    
+
     if (func == 'pie'):
         #example: pie red,white,blue 30,45,25
         if not (len(args) == 4):

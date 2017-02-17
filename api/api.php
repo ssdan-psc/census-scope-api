@@ -256,7 +256,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
 
 		$labels = array();
-	
+		$chart_data = array();
 
 		// Add headers to csv
 		$csv = '';
@@ -269,10 +269,17 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 		foreach ($conn->query($query) as $row) {
 			array_push($labels, $row[0]);
-			array_push($data, $row[1]);
+			array_push($chart_data, $row[1]);
 			$csv .= $row[0] . "," . $row[1] . "\n";
 		}
 		
+		var_dump($labels);
+		var_dump($chart_data);
+		
+		$call = "python json_builder_new.py line ". implode(',', $labels)." ".$topic." ".implode(',',$chart_data);
+		var_dump($call);
+		$chart = passthru($call);
+		var_dump($chart);
 		$data['trend'] = array("csv" => $csv, "chart" => "chart");
 	 } 
 	 else { 
