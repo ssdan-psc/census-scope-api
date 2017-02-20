@@ -86,9 +86,12 @@ def chart_bar(axislabels, setlabels, datasets, colors):
     j = '{'
     j += '"type": \"bar\", "data":'
     j += "{"
-    j += '"labels": '
-    j += str(axislabels)
-    j += ', "datasets": ['
+    j += '"labels":[ '
+    for l in axislabels:
+        j += '"' + l + '"'
+        if l != axislabels[-1]:
+            j += ","
+    j += '], "datasets": ['
 
     for i in range(len(datasets)):
         j += "{"
@@ -305,13 +308,16 @@ def main(args):
             print('Error in json_builder.py: bar chart requires 3 lists as arguments')
             return
         else:
+            print(args)
             axislabels = args[2].split(',') # x-axis
             setlabels = args[3].split(',')
             setlist = args[4].split('&')
+            print("4 " + args[4])
             datasets = []
             for s in setlist:
                 l = s.split(',')
                 datasets.append(l)
+            print(datasets)
             return chart_bar(axislabels, setlabels, datasets, color_list)
 
     if (func == 'line'):
