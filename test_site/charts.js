@@ -94,18 +94,23 @@ $(document).ready(function() {
         // Default United States & 2010
         url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=' + topic,
         success: function (data) {
-            console.log(data['data']['pyramid'])
+            console.log(data['data'])
             var pie_data = data['data']['pie'];
             var trend_data = data['data']['trend']
             var stacked_data = data['data']['stacked']
             var table_data = data['data']['table']
             var pyramid_data = data['data']['pyramid']
 
-            if ('error' in pie_data) {
+            console.log('Pie')
+	    console.log(pie_data);
+	    console.log('Stacked');
+	    console.log(stacked_data);
+	    
+	    if ('error' in pie_data) {
                 pie_ctx.getContext('2d').font = "20px Helvetica";
                 pie_ctx.getContext('2d').fillText(pie_data['error'], 50, 50);
             } else {
-                var full_pie_json = pie_data['chart'];
+                var full_pie_json = JSON.parse(pie_data['chart']);
                 pie_csv = pie_data['csv'];
                 pieChart = new Chart(pie_ctx, full_pie_json);
             }
@@ -124,7 +129,7 @@ $(document).ready(function() {
                 bar_ctx.getContext('2d').font = "20px Helvetica";
                 bar_ctx.getContext('2d').fillText(stacked_data['error'], 50, 50);
             } else {
-                var full_stacked_json = stacked_data['chart'];
+                var full_stacked_json = JSON.parse(stacked_data['chart']);
                 stacked_csv = stacked_data['csv'];
                 barChart = new Chart(bar_ctx, full_stacked_json);
             }
@@ -135,7 +140,7 @@ $(document).ready(function() {
             } else {
                 table_csv = table_data['csv'];
                 table_list = [];
-                lines = table_csv.split('\r\n');
+                lines = table_csv.split('\n');
                 for (var i = 0; i < lines.length; i++) {
                     line = lines[i].split(',');
                     table_list.push(line)
@@ -147,7 +152,7 @@ $(document).ready(function() {
                 pyramid_ctx.getContext('2d').font = "20px Helvetica";
                 pyramid_ctx.getContext('2d').fillText(pyramid_data['error'], 50, 50);
             } else {
-                var partial_json = pyramid_data['chart'];
+                var partial_json = JSON.parse(pyramid_data['chart']);
                 var full_pyramid_json = $.extend({}, partial_json, pyramid_opts);
                 pyramid_csv = pyramid_data['csv'];
                 pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
@@ -224,7 +229,7 @@ $(document).ready(function() {
                     try { 
                         pieChart.destroy();
                     } finally {
-                        var full_pie_json = pie_data['chart'];
+                        var full_pie_json = JSON.parse(pie_data['chart']);
                         pie_csv = pie_data['csv'];
                         pieChart = new Chart(pie_ctx, full_pie_json);
                     }
@@ -237,7 +242,7 @@ $(document).ready(function() {
                     try { 
                         lineChart.destroy(); 
                     } finally {
-                        var full_line_json = trend_data['chart'];
+                        var full_line_json = JSON.parse(trend_data['chart']);
                         trend_csv = trend_data['csv'];
                         lineChart = new Chart(line_ctx, full_line_json);
                     }
@@ -250,7 +255,7 @@ $(document).ready(function() {
                     try { 
                         barChart.destroy(); 
                     } finally {
-                        var full_stacked_json = stacked_data['chart'];
+                        var full_stacked_json = JSON.parse(stacked_data['chart']);
                         stacked_csv = stacked_data['csv'];
                         barChart = new Chart(bar_ctx, full_stacked_json);
                     }
@@ -283,7 +288,7 @@ $(document).ready(function() {
                             dynatable.settings.dataset.originalRecords.pop();
                         }
 
-                        var lines = newData.split("\\r\\n");
+                        var lines = newData.split("\n");
                         lines.pop();
                         var cols = lines[0].split(",");
               
@@ -300,7 +305,7 @@ $(document).ready(function() {
                         dynatable.process();
                     };
 
-                    update_dynatable(table, tbl_resp[0])
+                    update_dynatable(table, data['data']['table']['csv']);
 
                 }
 
@@ -311,7 +316,7 @@ $(document).ready(function() {
                     try { 
                         pyramidChart.destroy();
                     } finally {
-                        var partial_json = pyramid_data['chart'];
+                        var partial_json = JSON.parse(pyramid_data['chart']);
                         var full_pyramid_json = $.extend({}, partial_json, pyramid_opts);
                         pyramid_csv = pyramid_data['csv'];
                         pyramidChart = new Chart(pyramid_ctx, full_pyramid_json)
@@ -320,6 +325,7 @@ $(document).ready(function() {
 
             },
             error: function (xhr, status, error) {
+		// TODO: 
                 pie_ctx.getContext('2d').font = "20px Helvetica";
                 pie_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
             }

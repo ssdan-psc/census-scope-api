@@ -98,20 +98,20 @@ $response['status'] = 404;
 $response['data'] = NULL;
 
 // Connect to MySQL
-$servername = "127.0.0.1";
-$username = "root";
-$password = "";
-$table = 'sample';
-$database = 'census_scope';
-$port = '3307';
+//$servername = "127.0.0.1";
+//$username = "root";
+//$password = "";
+//$table = 'sample';
+//$database = 'census_scope';
+//$port = '3307';
 
 // Connect to MySQL
-// $servername = "webapps4-mysql.miserver.it.umich.edu";
-// $username = "censcope";
-// $password = "ChangeMeNow2017_censcope";
-// $table = 'sample';
-// $database = "censcope";
-// $port = '3306';
+$servername = "webapps4-mysql.miserver.it.umich.edu";
+$username = "censcope";
+ $password = "ChangeMeNow2017_censcope";
+ $table = 'sample';
+$database = "censcope";
+$port = '3306';
 
 try {
     $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
@@ -176,12 +176,11 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 		$pie_call = "python json_builder_new.py pie \"". implode(',', $labels)."\" ".implode(',',$pie_data);
 		$pie_chart = exec($pie_call);
-
 		$data['pie'] = array("csv" => $csv, "chart" => $pie_chart);
 	} else{
 		$data['pie'] = array("error" =>  "placeholder error message");
 	}
-
+	
 	// Trend
 	$cols = get_cols($topic, 'trend', $conn);
 	if (count($cols) > 0) {
@@ -219,11 +218,11 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	 else { 
 	      	$data['trend'] = array("error" =>  "placeholder error message");
 	 }
-
+	 
 	// Stacked
 	$cols = get_cols($topic, 'stacked_bar', $conn);
 	if (count($cols) > 0) {
-		$data_labels = array("Year");
+		$data_labels = array();
 		$query = "SELECT Year";
 		foreach ($cols as $col) {
 			$query .=  "," . $col['col'];
@@ -233,7 +232,6 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
 
 		$labels = array();
-		$data = array();
 
 		// Add headers to csv
 		$csv = '';
@@ -243,7 +241,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		}
 
 		$csv .= "\n";
-		$datasets = array();
+		$year_datasets = array();
 
 		foreach ($conn->query($query) as $row) {
 			array_push($labels, $row[0]);
@@ -258,19 +256,27 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 					array_push($new_dataset, $row[$i]);
 				}
 			}
-			array_push($datasets, $new_dataset);
+			array_push($year_datasets, $new_dataset);
 			$csv .= "\n";
 		}
 
-		$bar_call = "python json_builder_new.py bar \"". implode(',', $data_labels)."\" ".implode(',', $labels)." ";
+		$datasets = array();
+		for($j = 0; $j < count($data_labels) - 1; $j++) {
+		       $new_dataset = array();
+		       foreach($year_datasets as $year) {
+		           array_push($new_dataset, $year[$j]);
+		       }
+		       array_push($datasets, $new_dataset);
+		}
+		
+		$bar_call = "python json_builder_new.py bar \"". implode(',', $labels)."\" \"".implode(',', $data_labels)."\" \"";
 		foreach($datasets as $dataset) {
 			$bar_call .= implode(',', $dataset);
 			if ($dataset != end($datasets)) {
 				$bar_call .= "&";
 			}
 		}
-
-		echo $bar_call;
+		$bar_call .= "\"";
 		$bar_chart = exec($bar_call);
 
 		$data['stacked'] = array("csv" => $csv, "chart" => $bar_chart);
@@ -336,7 +342,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$list1 = array();
 		foreach ($conn->query($query1) as $row) {
 			for ($i = 0; $i < count($row) / 2; $i++) {
-    			array_push($list1, $row[$i]);
+    			array_push($list1, $row[$i] * -1.0);
 			}
 		}
 
@@ -354,12 +360,13 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$csv .= 'Male, '.implode(',', $list1)."\n";
 		$csv .= "Female,  ".implode(',', $list2)."\n";
 
-		$pyramid_call = "python json_builder_new.py pyramid \"". implode(',', $labels)."\" Male,Female ".implode(',',$list1)." ".implode(',', $list2);
+		$pyramid_call = "python json_builder_new.py pyramid \"". implode(',', array_reverse($labels))."\" Male,Female ".implode(',',array_reverse($list1))." ".implode(',', array_reverse($list2));
 		$pyramid_chart = exec($pyramid_call);
 		$data['pyramid'] = array("csv" => $csv, "chart" => $pyramid_chart);
 	} else {
 		$data['pyramid'] = array("error" => "placeholder error message");
 	}
+
 	
 	$response['data'] = $data;
 }
