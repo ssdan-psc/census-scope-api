@@ -13,29 +13,17 @@ CREATE TABLE IF NOT EXISTS censcope.col_map (
 );
 
 INSERT INTO col_map(col, label, topic, pie, trend, stacked_bar, tbl, pyramid1, pyramid2)
-VALUES ('TotalPopulation', 'population', 'Total Population', 0, 1, 0, 1, 0, 0),
-('B5060', 'Total with less than HS diploma, GED, or equivalent', 'education',
-('B5061', 'Total with HS diploma, GED, or equivalent', 'education',
-('B5062', 'Total with HS diploma, GED, or equivalent or higher', 'education',
-('B5063', 'Total with some College or Associates Degree', 'education',
-('B5064', 'Total with Bachelors Degree or higher', 'education',
-('B5065', 'Total with Masters Degree or higher', 'education',
-('B5019', 'Total population Regular high school diploma', 'education',
-('B5020', 'Total population GED or alternative credential', 'education',
-B5021	Total population Some college, less than 1 year
-B5022	Total population Some college, 1 or more years, no degree
-B5023	Total population Associates degree
-B5024	Total population Bachelors degree
-B5025	Total population Masters degree
-B5026	Total population Professional school degree
-B5027	Total population Doctorate degree
+VALUES (`B5078`, `Percent Males with less than HS diploma, GED, or equivalent`, `education`, 0, 1, 1, 0, 0, 0),
+(`B5079`, `Percent Females with less than HS diploma, GED, or equivalent`, `education`, 0, 1, 1, 0, 0, 0),
+(`B5080`, `Percent Males with HS Grad, GED, or equivalent`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5081`, `Percent Females with HS Grad, GED, or equivalent`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5082`, `Percent Males with HS Grad, GED, equivalent or higher`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5083`, `Percent Females with HS Grad, GED, equivalent or higher`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5084`, `Percent Males with some College or Associates Degree`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5085`, `Percent Females with some College or Associates Degree`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5086`, `Percent Males with Bachelors Degree or higher`, `education`, 0, 1, 1, 0, 0, 0),
+(`B5087`, `Percent Females with Bachelors Degree or higher`, `education`, 0, 1, 1, 0, 0, 0),
+(`B5088`, `Percent Males with Masters Degree or higher`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5089`, `Percent Females with Masters Degree or higher`, `education`, 0, 0, 1, 0, 0, 0),
+(`B5090`, `Percent Population 25+ less than HS Diploma/Equivalent`, `education`, 0, 1, 0, 0, 0, 0);
 
-
-5078-5090 bar chart / pie chart
-5066-5077 population pyramid
-
-5006-50018 pie chart (edited)
-5019-5027 pie chart
-5028-5069 population pyramid
-
-5060-5065 trend chart
