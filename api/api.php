@@ -98,20 +98,20 @@ $response['status'] = 404;
 $response['data'] = NULL;
 
 // Connect to MySQL
-//$servername = "127.0.0.1";
-//$username = "root";
-//$password = "";
-//$table = 'sample';
-//$database = 'census_scope';
-//$port = '3307';
+$servername = "127.0.0.1";
+$username = "root";
+$password = "";
+$table = 'ACS_CombinedYears_CustomMeasures';
+$database = 'censcope';
+$port = '3307';
 
 // Connect to MySQL
-$servername = "webapps4-mysql.miserver.it.umich.edu";
-$username = "censcope";
- $password = "ChangeMeNow2017_censcope";
- $table = 'sample';
-$database = "censcope";
-$port = '3306';
+// $servername = "webapps4-mysql.miserver.it.umich.edu";
+// $username = "censcope";
+// $password = "ChangeMeNow2017_censcope";
+// $table = 'sample';
+// $database = "censcope";
+// $port = '3306';
 
 try {
     $conn = new PDO("mysql:host=".$servername.";port=".$port.";dbname=".$database, $username, $password);
@@ -130,6 +130,8 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	$topic = $_GET['topic'];
 	$geo = $_GET['geo'];
 	$year = $_GET['year'];
+	$stacked1 = $_GET['stacked1'];
+	$stacked2 = $_GET['stacked2'];
 
 	$response['code'] = 1;
 	$response['status'] = $api_response_code[$response['code'] ]['HTTP Response'];
@@ -149,7 +151,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			array_push($data_labels, $col['label']);
 		}
 
-		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "' AND Year=" . $year;
+		$query .= " FROM `" . $table . "` WHERE Name='" . $geo . "' AND Year=" . $year;
 
 		$labels = $data_labels;
 		$data = array();
@@ -176,72 +178,105 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 		$pie_call = "python json_builder_new.py pie \"". implode(',', $labels)."\" ".implode(',',$pie_data);
 		$pie_chart = exec($pie_call);
+
 		$data['pie'] = array("csv" => $csv, "chart" => $pie_chart);
 	} else{
 		$data['pie'] = array("error" =>  "placeholder error message");
 	}
-	
+
 	// Trend
 	$cols = get_cols($topic, 'trend', $conn);
 	if (count($cols) > 0) {
-		$data_labels = array("Year");
+		$data_labels = array();
 		$query = "SELECT Year";
 		foreach ($cols as $col) {
 			$query .=  "," . $col['col'];
 			array_push($data_labels, $col['label']);
 		}
 
-		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+		$query .= " FROM `" . $table . "` WHERE Name='" . $geo . "'";
 
 		$labels = array();
 		$trend_data = array();
 
 		// Add headers to csv
-		$csv = '';
+		$csv = 'Year, ';
 		foreach ($data_labels as $label){
 			$csv .= $label;
 			if ($label != end($data_labels)) {$csv .= ",";}
 		}
 
 		$csv .= "\n";
-
+		$count = 0;
 		foreach ($conn->query($query) as $row) {
+			// print_r($row);
 			array_push($labels, $row[0]);
-			array_push($trend_data, $row[1]);
-			$csv .= $row[0] . "," . $row[1] . "\n";
+			$csv .= $row[0] . "," ;
+			for ($x = 1; $x <= count($data_labels); $x++) {
+				if ($count == 0) {
+					array_push($trend_data, $row[$x]);
+				} else {
+					$trend_data[$x - 1] .= ','.$row[$x];
+				}
+				$csv .= $row[$x] . ',';
+			}
+			$csv .= "\n";
+			$count += 1;
 		}
-		
-		$trend_call = "python json_builder_new.py line \"". implode(',', $labels)."\" ".$topic." ".implode(',',$trend_data);
+
+		# python build.py line year1,year2,year3 label1,label2,label3 dataset1&dataset2&dataset3
+
+		$lines = implode(";", $data_labels);
+
+		$trend_call = "python json_builder_new.py line ". implode(';', $labels)." ".$lines." ".implode('&',$trend_data);
+		var_dump($trend_call);
+
 		$trend_chart = exec($trend_call);
 		$data['trend'] = array("csv" => $csv, "chart" => $trend_chart);
 	 } 
 	 else { 
 	      	$data['trend'] = array("error" =>  "placeholder error message");
 	 }
-	 
-	// Stacked
-	$cols = get_cols($topic, 'stacked_bar', $conn);
+
+	// Stacked1
+	$cols = get_cols($topic, 'stacked1', $conn);
+	print_r($cols);
+
 	if (count($cols) > 0) {
-		$data_labels = array();
 		$query = "SELECT ";
+		if ($stacked1 == 'race') {
+			$data_labels = array('White', 'Black', 'Asian', 'Hispanic');
+			# code
+		} elseif ($stacked1 == 'sex') {
+			$data_labels = array('Male', 'Female');
+		} elseif ($stacked1 == 'year') {
+			$data_labels = array("Year");
+			$query .= " Year";
+		} else {
+		
+		}
+
 		foreach ($cols as $col) {
-			$query .=  "," . $col['col'];
+			$query .= $col['col'] . ",";
 			array_push($data_labels, $col['label']);
 		}
 
-		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "' AND Year=" . $year;
+		$query .= " FROM " . $table . " WHERE Name='" . $geo . "'";
 
 		$labels = array();
+		$data = array();
+
+		echo $query;
 
 		// Add headers to csv
 		$csv = '';
 		foreach ($data_labels as $label){
 			$csv .= $label;
-			if ($label != end($data_labels)) {$csv .= ",";}
+			if ($label != end($labels)) {$csv .= ",";} 	# TODO: Except not really because we need to separate out 
 		}
 
 		$csv .= "\n";
-		$year_datasets = array();
+		$datasets = array();
 
 		foreach ($conn->query($query) as $row) {
 			array_push($labels, $row[0]);
@@ -256,32 +291,100 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 					array_push($new_dataset, $row[$i]);
 				}
 			}
-			array_push($year_datasets, $new_dataset);
+			array_push($datasets, $new_dataset);
 			$csv .= "\n";
 		}
 
-		$datasets = array();
-		for($j = 0; $j < count($data_labels) - 1; $j++) {
-		       $new_dataset = array();
-		       foreach($year_datasets as $year) {
-		           array_push($new_dataset, $year[$j]);
-		       }
-		       array_push($datasets, $new_dataset);
-		}
-		
-		$bar_call = "python json_builder_new.py bar \"". implode(',', $labels)."\" \"".implode(',', $data_labels)."\" \"";
+		# data labels = x axis
+		# labels  = y axis
+
+		$bar_call = "python json_builder_new.py bar \"". implode(',', $data_labels)."\" ".implode(',', $labels)." ";
+		echo $bar_call;
+
 		foreach($datasets as $dataset) {
 			$bar_call .= implode(',', $dataset);
 			if ($dataset != end($datasets)) {
 				$bar_call .= "&";
 			}
 		}
-		$bar_call .= "\"";
+
+		// echo $bar_call;
 		$bar_chart = exec($bar_call);
 
-		$data['stacked'] = array("csv" => $csv, "chart" => $bar_chart);
+		$data['stacked1'] = array("csv" => $csv, "chart" => $bar_chart);
 	 } else { 
-	 	$data['stacked'] = array("error" =>  "placeholder error message");
+	 	$data['stacked1'] = array("error" =>  "placeholder error message");
+	}
+
+	// Stacked2
+	$cols = get_cols($topic, 'stacked2', $conn);
+
+	if (count($cols) > 0) {
+		if ($stacked2 == 'race') {
+			# code
+		} elseif ($stacked2 == 'sex') {
+			# code...
+		} elseif ($stacked2 == 'year') {
+			# code...
+		} else {
+		
+		}
+
+		$data_labels = array("Year");
+		$query = "SELECT Year";
+		foreach ($cols as $col) {
+			$query .=  "," . $col['col'];
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM " . $table . " WHERE Name='" . $geo . "'";
+
+		$labels = array();
+		$data = array();
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+		$datasets = array();
+
+		foreach ($conn->query($query) as $row) {
+			array_push($labels, $row[0]);
+			$new_dataset = array();
+			for($i = 0; $i < count($data_labels); $i++) {
+				$csv .= $row[$i];
+				if ($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
+
+				if($i != 0) {
+					array_push($new_dataset, $row[$i]);
+				}
+			}
+			array_push($datasets, $new_dataset);
+			$csv .= "\n";
+		}
+
+		# data labels = x axis
+		# labels  = y axis
+		$bar_call = "python json_builder_new.py bar \"". implode(',', $data_labels)."\" ".implode(',', $labels)." ";
+		foreach($datasets as $dataset) {
+			$bar_call .= implode(',', $dataset);
+			if ($dataset != end($datasets)) {
+				$bar_call .= "&";
+			}
+		}
+
+		// echo $bar_call;
+		$bar_chart = exec($bar_call);
+
+		$data['stacked2'] = array("csv" => $csv, "chart" => $bar_chart);
+	 } else { 
+	 	$data['stacked2'] = array("error" =>  "placeholder error message");
 	}
 
 	// Table
@@ -294,7 +397,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			array_push($data_labels, $col['label']);
 		}
 
-		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+		$query .= " FROM " . $table . " WHERE Name='" . $geo . "'";
 
 		// Add headers to csv
 		$csv = '';
@@ -342,7 +445,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$list1 = array();
 		foreach ($conn->query($query1) as $row) {
 			for ($i = 0; $i < count($row) / 2; $i++) {
-    			array_push($list1, $row[$i] * -1.0);
+    			array_push($list1, $row[$i]);
 			}
 		}
 
@@ -360,13 +463,12 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$csv .= 'Male, '.implode(',', $list1)."\n";
 		$csv .= "Female,  ".implode(',', $list2)."\n";
 
-		$pyramid_call = "python json_builder_new.py pyramid \"". implode(',', array_reverse($labels))."\" Male,Female ".implode(',',array_reverse($list1))." ".implode(',', array_reverse($list2));
+		$pyramid_call = "python json_builder_new.py pyramid \"". implode(',', $labels)."\" Male,Female ".implode(',',$list1)." ".implode(',', $list2);
 		$pyramid_chart = exec($pyramid_call);
 		$data['pyramid'] = array("csv" => $csv, "chart" => $pyramid_chart);
 	} else {
 		$data['pyramid'] = array("error" => "placeholder error message");
 	}
-
 	
 	$response['data'] = $data;
 }
