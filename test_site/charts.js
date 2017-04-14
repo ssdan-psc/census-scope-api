@@ -94,17 +94,11 @@ $(document).ready(function() {
         // Default United States & 2010
         url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=' + topic,
         success: function (data) {
-            console.log(data['data'])
             var pie_data = data['data']['pie'];
             var trend_data = data['data']['trend']
             var stacked_data = data['data']['stacked']
             var table_data = data['data']['table']
             var pyramid_data = data['data']['pyramid']
-
-            console.log('Pie')
-	    console.log(pie_data);
-	    console.log('Stacked');
-	    console.log(stacked_data);
 	    
 	    if ('error' in pie_data) {
                 pie_ctx.getContext('2d').font = "20px Helvetica";
@@ -210,11 +204,13 @@ $(document).ready(function() {
 
         var geo = $('#geo').val();
         var year = $('#year').val();
+        var xaxis = $('#stacked_bar_xaxis').val();
 
         $.ajax({
             async: false,
             type: 'GET',
-            url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic,
+            // url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&xaxis=' + xaxis,
+            url: 'http://localhost/~Rachel?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&xaxis=' + xaxis,
             success: function (data) {
                 var pie_data = data['data']['pie'];
                 var trend_data = data['data']['trend']

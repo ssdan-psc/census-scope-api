@@ -223,13 +223,13 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 	$cols = get_cols($topic, 'stacked_bar', $conn);
 	if (count($cols) > 0) {
 		$data_labels = array();
-		$query = "SELECT Year";
+		$query = "SELECT ";
 		foreach ($cols as $col) {
 			$query .=  "," . $col['col'];
 			array_push($data_labels, $col['label']);
 		}
 
-		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "'";
+		$query .= " FROM " . $table . " WHERE AreaName='" . $geo . "' AND Year=" . $year;
 
 		$labels = array();
 
