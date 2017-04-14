@@ -45,6 +45,10 @@
             <option selected value="2010">2010</option>
             <option value="2015">2015</option>
         </select>
+
+        <input type="hidden" name="stacked1" value="year">
+        <input type="hidden" name="stacked2" value="race">
+        
         <button id="button" type="submit">Generate Charts</button>
     </form>
 
@@ -63,8 +67,15 @@
     <button onclick="download_csv('trend')">Download CSV</button>
 
      <div style="width: 40%">
-        <h1 style="text-align:center">Stacked Bar Chart</h1>
-        <canvas id="barChart" width="500" height="500"></canvas>
+        <h1 style="text-align:center">Stacked Bar Chart 1</h1>
+        <canvas id="barChart1" width="500" height="500"></canvas>
+    </div>
+    <button onclick="download_img('stacked')">Download Graph</button>
+    <button onclick="download_csv('stacked')">Download CSV</button>
+
+     <div style="width: 40%">
+        <h1 style="text-align:center">Stacked Bar Chart 2</h1>
+        <canvas id="barChart2" width="500" height="500"></canvas>
     </div>
     <button onclick="download_img('stacked')">Download Graph</button>
     <button onclick="download_csv('stacked')">Download CSV</button>

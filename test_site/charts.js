@@ -9,18 +9,21 @@ $(document).ready(function() {
 
     var pieChart;
     var lineChart;
-    var barChart;
+    var barChart1;
+    var barChart2;
     var table = document.getElementById("Table");
     var pyramidChart;
 
     var pie_ctx = document.getElementById("pieChart");
     var line_ctx = document.getElementById("lineChart");
-    var bar_ctx = document.getElementById("barChart");
+    var bar_ctx1 = document.getElementById("barChart1");
+    var bar_ctx2 = document.getElementById("barChart2")
     var pyramid_ctx = document.getElementById("pyramidChart");
 
     var pie_csv;
     var trend_csv;
-    var stacked_csv;
+    var stacked_csv1;
+    var stacked_csv2;
     var table_csv;
     var pyramid_csv;
 
@@ -92,8 +95,9 @@ $(document).ready(function() {
         async: false,
         type: 'GET',
         // Default United States & 2010
-        url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=united%20states&year=2010&topic=' + topic,
+        url: 'http://localhost/~Rachel/index.php?method=hello&format=json&geo=united%20states&year=2010&topic=' + topic + '&stacked1=year&stacked2=race',
         success: function (data) {
+            console.log(data)
             var pie_data = data['data']['pie'];
             var trend_data = data['data']['trend']
             var stacked_data = data['data']['stacked']
@@ -204,17 +208,19 @@ $(document).ready(function() {
 
         var geo = $('#geo').val();
         var year = $('#year').val();
-        var xaxis = $('#stacked_bar_xaxis').val();
+        var stacked1 = $('#stacked1').val();
+        var stacked2 = $('#stacked2').val();
 
         $.ajax({
             async: false,
             type: 'GET',
             // url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&xaxis=' + xaxis,
-            url: 'http://localhost/~Rachel?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&xaxis=' + xaxis,
+            url: 'http://localhost/~Rachel?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&stacked1=' + stacked1 + '&stacked2=' + stacked2,
             success: function (data) {
                 var pie_data = data['data']['pie'];
                 var trend_data = data['data']['trend']
-                var stacked_data = data['data']['stacked']
+                var stacked_data1 = data['data']['stacked1']
+                var stacked_data2 = data['data']['stacked2']
                 var table_data = data['data']['table']
                 var pyramid_data = data['data']['pyramid']
 
@@ -244,16 +250,29 @@ $(document).ready(function() {
                     }
                 }
 
-                if ('error' in stacked_data) {
-                    bar_ctx.getContext('2d').font = "20px Helvetica";
-                    bar_ctx.getContext('2d').fillText(stacked_data['error'], 50, 50);
+                if ('error' in stacked_data1) {
+                    bar_ctx1.getContext('2d').font = "20px Helvetica";
+                    bar_ctx1.getContext('2d').fillText(stacked_data1['error'], 50, 50);
                 } else {
                     try { 
-                        barChart.destroy(); 
+                        barChart1.destroy(); 
                     } finally {
-                        var full_stacked_json = JSON.parse(stacked_data['chart']);
-                        stacked_csv = stacked_data['csv'];
-                        barChart = new Chart(bar_ctx, full_stacked_json);
+                        var full_stacked_json = JSON.parse(stacked_data1['chart']);
+                        stacked_csv1 = stacked_data['csv'];
+                        barChart1 = new Chart(bar_ctx1, full_stacked_json);
+                    }
+                }
+
+                if ('error' in stacked_data2) {
+                    bar_ctx2.getContext('2d').font = "20px Helvetica";
+                    bar_ctx2.getContext('2d').fillText(stacked_data2['error'], 50, 50);
+                } else {
+                    try { 
+                        barChart2.destroy(); 
+                    } finally {
+                        var full_stacked_json = JSON.parse(stacked_data2['chart']);
+                        stacked_csv2 = stacked_data2['csv'];
+                        barChart2 = new Chart(bar_ctx2, full_stacked_json);
                     }
                 }
 
