@@ -321,20 +321,20 @@ def main(args):
             return chart_bar(axislabels, setlabels, datasets, color_list)
 
     if (func == 'line'):
-        #example: line 1,2,3,4,5 chips,dip 2,3,4,5,6&4,3,2,1,0
+        #example: line 1;2;3;4;5 chips;dip 2;3;4;5;6&4;3;2;1;0
         #the third argument must be a list of lists
         #   lists should be separated by '&'
-        #   elements within lists are separated by ','
+        #   elements within lists are separated by ';'
         if not (len(args) == 5):
             print('Error in json_builder.py: line chart requires 3 lists as arguments')
             return
         else:
-            axislabels = args[2].split(',')
-            setlabels = args[3].split(',')
+            axislabels = args[2].split(';')
+            setlabels = args[3].split(';')
             setlist = args[4].split('&')
             datasets = []
             for s in setlist:
-                l = s.split(',')
+                l = s.split(';')
                 datasets.append(l)
             return chart_line(axislabels, setlabels, datasets, color_list)
 
