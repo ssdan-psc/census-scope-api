@@ -138,8 +138,8 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 
 	$pie_data = array();
 
-	// Pie
-	$cols = get_cols($topic, 'pie', $conn);
+	// Pie1
+	$cols = get_cols($topic, 'pie1', $conn);
 	if (count($cols) > 0){
 		$query = "SELECT ";
 		$data_labels = array();
@@ -182,6 +182,52 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		$data['pie'] = array("csv" => $csv, "chart" => $pie_chart);
 	} else{
 		$data['pie'] = array("error" =>  "placeholder error message");
+	}
+
+	// Pie1
+	$cols = get_cols($topic, 'pie2', $conn);
+	if (count($cols) > 0){
+		$query = "SELECT ";
+		$data_labels = array();
+		foreach ($cols as $col) {
+			$query .= $col['col'];
+			if ($col != end($cols)) {
+				$query .= ",";
+			}
+			array_push($data_labels, $col['label']);
+		}
+
+		$query .= " FROM `" . $table . "` WHERE Name='" . $geo . "' AND Year=" . $year;
+
+		$labels = $data_labels;
+		$data = array();
+
+		// Add headers to csv
+		$csv = '';
+		foreach ($data_labels as $label){
+			$csv .= $label;
+			if ($label != end($data_labels)) {$csv .= ",";}
+		}
+
+		$csv .= "\n";
+		foreach ($conn->query($query) as $row) {
+			for($i = 0; $i < count($data_labels); $i++) {
+				array_push($pie_data, $row[$i]);
+				$csv .= $row[$i];
+				if($i != count($data_labels) - 1) {
+					$csv .= ",";
+				}
+			}
+
+			$csv .= "\n";
+		}
+
+		$pie_call = "python json_builder_new.py pie \"". implode(',', $labels)."\" ".implode(',',$pie_data);
+		$pie_chart = exec($pie_call);
+
+		$data['pie2'] = array("csv" => $csv, "chart" => $pie_chart);
+	} else{
+		$data['pie2'] = array("error" =>  "placeholder error message");
 	}
 
 	// Trend
