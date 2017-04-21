@@ -46,4 +46,3 @@ VALUES ('B5078', 'Percent Males with less than HS diploma, GED, or equivalent', 
 ('B5136', 'Percent Hispanic or Latino population some college or associates', 'education', 0, 0, 0, 0, 1, 0, 0, 0),
 ('B5137', 'Percent Hispanic or Latino population bacehlors or higher','education', 0, 0, 0, 0, 1, 0, 0, 0);
 
-

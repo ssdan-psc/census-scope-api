@@ -110,7 +110,7 @@ $(document).ready(function() {
             var stacked_data2 = data['data']['stacked2']
             var table_data = data['data']['table']
             var pyramid_data = data['data']['pyramid']
-	    
+        
             if (pieChart1 != undefined) {
                 if ('error' in pie_data1) {
                     pie_ctx1.getContext('2d').font = "20px Helvetica";
@@ -121,7 +121,7 @@ $(document).ready(function() {
                     pieChart1 = new Chart(pie_ctx1, full_pie_json);
                 }
             }
-	       
+           
             if (pieChart2 != undefined) {
                 if ('error' in pie_data2) {
                     pie_ctx2.getContext('2d').font = "20px Helvetica";
