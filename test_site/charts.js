@@ -1,26 +1,28 @@
 $(document).ready(function() {
 
-    var param = window.location.search.substring(1).split("=")[0];
-    if (param == 'topic') {
-        var topic = window.location.search.substring(1).split("=")[1];
-    } else {
-        console.log("Need topic"); // TODO: Change error message & handling
-    }
+    var api_url = 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&'
+    var topic = window.location.pathname.replace(/\//g, '')
 
-    var pieChart;
+    var pieChart1;
+    var pieChart2;
+
     var lineChart;
+
     var barChart1;
     var barChart2;
+
     var table = document.getElementById("Table");
     var pyramidChart;
 
-    var pie_ctx = document.getElementById("pieChart");
+    var pie_ctx1 = document.getElementById("pieChart1");
+    var pie_ctx2 = document.getElementById("pieChart2")
     var line_ctx = document.getElementById("lineChart");
     var bar_ctx1 = document.getElementById("barChart1");
     var bar_ctx2 = document.getElementById("barChart2")
     var pyramid_ctx = document.getElementById("pyramidChart");
 
-    var pie_csv;
+    var pie_csv1;
+    var pie_csv2;
     var trend_csv;
     var stacked_csv1;
     var stacked_csv2;
@@ -91,26 +93,40 @@ $(document).ready(function() {
     };
 
     //All default charts
+    var stacked1 = $('#stacked1').val();
+    var stacked2 = $('#stacked2').val();
+
     $.ajax({
         async: false,
         type: 'GET',
         // Default United States & 2010
-        url: 'http://localhost/~Rachel/index.php?method=hello&format=json&geo=united%20states&year=2010&topic=' + topic + '&stacked1=year&stacked2=race',
+        url: api_url + 'geo=united%20states&year=2010&topic=' + topic + '&stacked1=' + stacked1 + '&stacked2=' + stacked2,
         success: function (data) {
             console.log(data)
-            var pie_data = data['data']['pie'];
+            var pie_data1 = data['data']['pie1'];
+            var pie_data2 = data['data']['pie2']
             var trend_data = data['data']['trend']
-            var stacked_data = data['data']['stacked']
+            var stacked_data1 = data['data']['stacked1']
+            var stacked_data2 = data['data']['stacked2']
             var table_data = data['data']['table']
             var pyramid_data = data['data']['pyramid']
 	    
-	    if ('error' in pie_data) {
-                pie_ctx.getContext('2d').font = "20px Helvetica";
-                pie_ctx.getContext('2d').fillText(pie_data['error'], 50, 50);
+	       if ('error' in pie_data1) {
+                pie_ctx1.getContext('2d').font = "20px Helvetica";
+                pie_ctx1.getContext('2d').fillText(pie_data['error'], 50, 50);
             } else {
-                var full_pie_json = JSON.parse(pie_data['chart']);
-                pie_csv = pie_data['csv'];
-                pieChart = new Chart(pie_ctx, full_pie_json);
+                var full_pie_json = JSON.parse(pie_data1['chart']);
+                pie_csv1 = pie_data1['csv'];
+                pieChart1 = new Chart(pie_ctx1, full_pie_json);
+            }
+
+            if ('error' in pie_data2) {
+                pie_ctx2.getContext('2d').font = "20px Helvetica";
+                pie_ctx2.getContext('2d').fillText(pie_data['error'], 50, 50);
+            } else {
+                var full_pie_json = JSON.parse(pie_data2['chart']);
+                pie_csv2 = pie_data2['csv'];
+                pieChart2 = new Chart(pie_ctx2, full_pie_json);
             }
 
             if ('error' in trend_data) {
@@ -166,12 +182,16 @@ $(document).ready(function() {
     download_csv = function(chartVariable) {
         var csv;
 
-        if (chartVariable == 'pie') {
-            csv = pie_csv
+        if (chartVariable == 'pie1') {
+            csv = pie_csv1
+        } else if (chartVariable == 'pie2') {
+            csv = pie_csv2
         } else if (chartVariable == 'trend') {
             csv = trend_csv
-        } else if (chartVariable == 'stacked') {
-            csv = stacked_csv
+        } else if (chartVariable == 'stacked1') {
+            csv = stacked_csv1
+        } else if (chartVariable == 'stacked2') {
+            csv = stacked_csv2
         } else if (chartVariable == 'pyramid') {
             csv = pyramid_csv
         }
@@ -187,12 +207,16 @@ $(document).ready(function() {
 
         var img;
 
-        if (chartVariable == 'pie') {
-            img = pieChart.toBase64Image();
+        if (chartVariable == 'pie1') {
+            img = pieChart1.toBase64Image();
+        } else if (chartVariable == 'pie2') {
+            img = pieChart2.toBase64Image();
         } else if (chartVariable == 'trend') {
             img = lineChart.toBase64Image();
-        } else if (chartVariable == 'stacked') {
-            img = barChart.toBase64Image();
+        } else if (chartVariable == 'stacked1') {
+            img = barChart1.toBase64Image();
+        } else if (chartVariable == 'stacked2') {
+            img = barChart2.toBase64Image();
         }
 
         var hiddenElement = document.createElement('a');
@@ -214,28 +238,42 @@ $(document).ready(function() {
         $.ajax({
             async: false,
             type: 'GET',
-            // url: 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&xaxis=' + xaxis,
-            url: 'http://localhost/~Rachel?method=hello&format=json&geo=' + geo + '&year=' + year + '&topic=' + topic + '&stacked1=' + stacked1 + '&stacked2=' + stacked2,
+            url: api_url + 'geo=' + geo + '&year=' + year + '&topic=' + topic + '&stacked1=' + stacked1 + '&stacked2=' + stacked2,
             success: function (data) {
-                var pie_data = data['data']['pie'];
+                var pie_data1 = data['data']['pie1'];
+                var pie_data2 = data['data']['pie2'];
                 var trend_data = data['data']['trend']
                 var stacked_data1 = data['data']['stacked1']
                 var stacked_data2 = data['data']['stacked2']
                 var table_data = data['data']['table']
                 var pyramid_data = data['data']['pyramid']
 
-                if ('error' in pie_data) {
-                    pie_ctx.getContext('2d').font = "20px Helvetica";
-                    pie_ctx.getContext('2d').fillText(pie_data['error'], 50, 50);
+                if ('error' in pie_data1) {
+                    pie_ctx1.getContext('2d').font = "20px Helvetica";
+                    pie_ctx1.getContext('2d').fillText(pie_data1['error'], 50, 50);
                 } else {
                     try { 
-                        pieChart.destroy();
+                        pieChart1.destroy();
                     } finally {
-                        var full_pie_json = JSON.parse(pie_data['chart']);
-                        pie_csv = pie_data['csv'];
-                        pieChart = new Chart(pie_ctx, full_pie_json);
+                        var full_pie_json = JSON.parse(pie_data1['chart']);
+                        pie_csv1 = pie_data1['csv'];
+                        pieChart1 = new Chart(pie_ctx1, full_pie_json);
                     }
                 }
+               
+                 if ('error' in pie_data2) {
+                    pie_ctx2.getContext('2d').font = "20px Helvetica";
+                    pie_ctx2.getContext('2d').fillText(pie_data2['error'], 50, 50);
+                } else {
+                    try { 
+                        pieChart2.destroy();
+                    } finally {
+                        var full_pie_json = JSON.parse(pie_data2['chart']);
+                        pie_csv2 = pie_data2['csv'];
+                        pieChart2 = new Chart(pie_ctx2, full_pie_json);
+                    }
+                }
+
 
                 if ('error' in trend_data) {
                     line_ctx.getContext('2d').font = "20px Helvetica";
@@ -340,7 +378,6 @@ $(document).ready(function() {
 
             },
             error: function (xhr, status, error) {
-		// TODO: 
                 pie_ctx.getContext('2d').font = "20px Helvetica";
                 pie_ctx.getContext('2d').fillText(xhr.status + ' Error: ' + xhr.responseText, 50, 50);
             }
