@@ -1,6 +1,8 @@
 $(document).ready(function() {
 
-    var api_url = 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&'
+    // var api_url = 'http://censusscope.web.itd.umich.edu/newCharts/api/api.php?method=hello&format=json&'
+    var api_url = 'http://localhost/~Rachel/index.php?method=hello&format=json&'
+    
     var topic = window.location.pathname.replace(/\//g, '')
 
     var pieChart1;
