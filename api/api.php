@@ -42,7 +42,7 @@ function deliver_response($format, $api_response){
 
 		// Set HTTP Response Content Type
 		header('Content-Type: application/json; charset=utf-8');
-		// TODO: Should not allow all origins
+		// TODO: Security - Should not allow all origins
 		header('Access-Control-Allow-Origin: *');
 
 		// Format data into a JSON response
@@ -119,7 +119,7 @@ try {
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch(PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
-    exit;    // TODO:
+    exit;    // TODO: Error handling
 }
 
 
@@ -319,6 +319,7 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 		foreach ($data_labels as $label){
 			$csv .= $label;
 			if ($label != end($labels)) {$csv .= ",";} 	# TODO: Except not really because we need to separate out 
+														# 		So sorry I have no idea what we meant by this. I would test this.
 		}
 
 		$csv .= "\n";
@@ -477,7 +478,8 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			}
 		}
 
-		// TODO: Change hardcoded table
+		// TODO: Change hardcoded table - popPyramid2014_15 was an old table that only had population pyramid data.
+		//		 Should be changed to whatever the main table is. 
 		$query1 .= " FROM " . "popPyramid2014_15" . " WHERE Name='" . $geo . "'";
 
 		$query2 = "SELECT ";
@@ -495,7 +497,8 @@ if(strcasecmp($_GET['method'],'hello') == 0){
 			}
 		}
 
-		// TODO: Change hardcoded table
+		// TODO: Change hardcoded table.  - popPyramid2014_15 was an old table that only had population pyramid data.
+		//		 Should be changed to whatever the main table is. 
 		$list2 = array();
 		$query2 .= " FROM " . "popPyramid2014_15" . " WHERE Name='" . $geo . "'";
 		foreach ($conn->query($query2) as $row) {
